@@ -22,8 +22,8 @@ int main(void)
 	B = ReadPoly();
 	S = SumOfPoly(A, B);
 	M = MulOfPoly(A, B);
-//	PrintPoly(M);
-//	PrintPoly(S);
+	PrintPoly(M);
+	PrintPoly(S);
 //	PrintPoly(A);
 	return 0;
 }
@@ -36,10 +36,12 @@ Polynomial MulOfPoly(Polynomial A, Polynomial B)
 	Header = (Polynomial)malloc(sizeof(struct PolyNode));
 	Header->link = NULL;
 	SPtr = Header;
-	MHPtr = (Polynomial)malloc(sizeof(struct PolyNode));
-	MPtr = MHPtr;
 	while (APtr != NULL)
 	{
+		//ai×(b0-bn)
+		MHPtr = (Polynomial)malloc(sizeof(struct PolyNode));
+		MPtr = MHPtr;
+		
 		BPtr = B->link;
 		while (BPtr != NULL)
 		{
@@ -54,7 +56,10 @@ Polynomial MulOfPoly(Polynomial A, Polynomial B)
 		if (SPtr->link) 
 		{  //alu sum
 			TMPPtr = SPtr;
+	//		PrintPoly(SPtr);
+	//		PrintPoly(MHPtr);
 			SPtr = SumOfPoly(TMPPtr, MHPtr);
+	//		PrintPoly(SPtr);
 			//realse MPtr
 			MPtr = MHPtr->link;
 			while(MPtr)
@@ -63,13 +68,14 @@ Polynomial MulOfPoly(Polynomial A, Polynomial B)
 				free(MPtr);
 				MPtr = TMPPtr;
 			}
-			MHPtr->link = NULL;
-			MPtr = MHPtr;
+			free(MHPtr);
+			//MHPtr->link = NULL;
+			//MPtr = MHPtr;
 		} 
 		else
 		{
 			SPtr = MHPtr;
-	//		PrintPoly(SPtr);
+			//PrintPoly(SPtr);
 		}
 		APtr = APtr->link;
 	}
