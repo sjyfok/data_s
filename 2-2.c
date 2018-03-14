@@ -112,6 +112,11 @@ Polynomial SumOfPoly(Polynomial A, Polynomial B)
 			TPtr->coef = APtr->coef+BPtr->coef;
 			APtr = APtr->link;
 			BPtr = BPtr->link;
+			if (TPtr->coef == 0)
+			{
+				free(TPtr);
+				continue;
+			}
 		}
 		PPtr->link = TPtr;
 		PPtr = TPtr;
