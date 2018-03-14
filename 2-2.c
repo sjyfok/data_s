@@ -151,13 +151,19 @@ Polynomial ReadPoly(void)
 		return NULL;
 	Header = (Polynomial)malloc(sizeof(struct PolyNode));
 	NPtr = Header;
-	while (num --)
+	while (num)
 	{
 		TPtr = (Polynomial)malloc(sizeof(struct PolyNode));
 		TPtr->link = NULL;
 		scanf("%d %d", &TPtr->coef, &TPtr->expon);
+		if (!TPtr->coef)
+		{
+			free(TPtr);
+			continue;
+		}
 		NPtr->link = TPtr;
 		NPtr = TPtr;
+		num --;
 	}
 	return Header;
 }
