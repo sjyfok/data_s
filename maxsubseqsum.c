@@ -4,7 +4,7 @@ int maxsubseq3(int list[], int N, int *s, int *e);
 
 int main(void)
 {
-	int A[10000], len = 0;
+	int A[100000], len = 0;
 	int i, sum, start, end;
 
 	scanf("%d", &len);
@@ -15,7 +15,8 @@ int main(void)
 	}
 
 	sum = maxsubseq3(A, len, &start, &end);
-	printf("%d %d %d\n", sum, start, end);
+	//printf("%d %d %d\n", sum, start, end);
+	printf("%d \n", sum);
 
 	return 0;
 }
