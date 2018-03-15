@@ -46,13 +46,13 @@ List ReadInput(void)
 	L->Last = num;
 }
 
-Position BinarySearch(List L, ElemType X)
+Position BinarySearch(List L, ElementType X)
 {
 	Position pi = 0;
 	Position lo = 1;
 	Position hi = L->Last;
 
-	while(lo < hi)
+	while(lo <= hi)
 	{
 		pi = lo+hi;
 		pi /= 2;
@@ -64,5 +64,5 @@ Position BinarySearch(List L, ElemType X)
 			hi = pi-1;
 		}
 	}
-
+ 	return 0;
 }
