@@ -171,12 +171,17 @@ Polynomial ReadPoly(void)
 void PrintPoly(Polynomial poly)
 {
 	Polynomial TPtr = poly->link;
-	while(TPtr != NULL)
-	{
-		if (TPtr->link != NULL)
-			printf("%d %d ", TPtr->coef, TPtr->expon);
-		else
-			printf("%d %d\n", TPtr->coef, TPtr->expon);
-		TPtr = TPtr->link;
-	} 
+	if (TPtr == NULL)	{
+		printf("%d %d\n", 0, 0);
+	}
+	else {
+		while(TPtr != NULL)
+		{
+			if (TPtr->link != NULL)
+				printf("%d %d ", TPtr->coef, TPtr->expon);
+			else
+				printf("%d %d\n", TPtr->coef, TPtr->expon);
+			TPtr = TPtr->link;
+		} 
+	}
 }
