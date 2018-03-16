@@ -15,8 +15,8 @@ int main(void)
 	}
 
 	sum = maxsubseq3(A, len, &start, &end);
-	//printf("%d %d %d\n", sum, start, end);
-	printf("%d \n", sum);
+	printf("%d %d %d\n", sum, start, end);
+	//printf("%d\n", sum);
 
 	return 0;
 }
@@ -27,12 +27,8 @@ int maxsubseq3(int list[], int N, int *s, int *e)
 
 	int i, tmp, is, ie;
 	thisSum = maxSum = 0;
-	*s = list[0];
-	*e = list[N-1];
-	is = 0;
-	ie = N-1;
-
-	tmp = list[0];
+	*s = 0; //list[0];
+	*e = N-1;//list[N-1];
 
 	for (i = 0; i < N; i ++)
 	{
@@ -40,22 +36,18 @@ int maxsubseq3(int list[], int N, int *s, int *e)
 		if (thisSum > maxSum)
 		{
 			maxSum = thisSum;
-			*e = list[i];			
+			*e = i;//list[i];			
+			*s = tmp;
 		} else if (thisSum < 0)
 		{
 			thisSum = 0;
-			*s = tmp;
-			if (i+1 < N) {
-	//			printf("t %d ", tmp);
-				tmp = list[i+1];
-				}
+			tmp = i+1;
 		}
 		else  //thisSum == maxSum
 		{
 			
 		}
 	}
-//	*s = tmp;
 	return maxSum;
 }
 
