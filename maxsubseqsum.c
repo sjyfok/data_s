@@ -4,7 +4,7 @@ int maxsubseq3(int list[], int N, int *s, int *e);
 
 int main(void)
 {
-	int A[100000], len = 0;
+	int A[10000], len = 0;
 	int i, sum, start, end;
 
 	scanf("%d", &len);
@@ -25,11 +25,11 @@ int maxsubseq3(int list[], int N, int *s, int *e)
 {
 	int thisSum, maxSum;
 
-	int i, tmp, is, ie;
+	int i, tmp, is;
 	thisSum = maxSum = 0;
-	*s = 0; //list[0];
-	tmp = 0;
-	*e = N-1;//list[N-1];
+	*s = list[0];
+	tmp = list[0];
+	*e = list[N-1];
 
 	for (i = 0; i < N; i ++)
 	{
@@ -37,12 +37,14 @@ int maxsubseq3(int list[], int N, int *s, int *e)
 		if (thisSum > maxSum)
 		{
 			maxSum = thisSum;
-			*e = i;//list[i];			
-			*s = tmp;
+			*e = list[i];			
+			while(list[is] == 0)
+				is ++;
+			*s = list[is];
 		} else if (thisSum < 0)
 		{
 			thisSum = 0;
-			tmp = i+1;
+			is = i+1;
 		}
 		else  //thisSum == maxSum
 		{
