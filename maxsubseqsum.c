@@ -28,8 +28,8 @@ int maxsubseq3(int list[], int N, int *s, int *e)
 	int i, tmp;
 	thisSum = maxSum = 0;
 	*s = list[0];
-	tmp = list[0];
 	*e = list[N-1];
+	tmp = 0;
 
 	for (i = 0; i < N; i ++)
 	{
