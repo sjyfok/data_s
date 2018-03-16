@@ -51,6 +51,16 @@ int maxsubseq3(int list[], int N, int *s, int *e)
 			
 		}
 	}
+	if (*s == list[0] && *e == list[N-1])
+	{
+		for (i = 0; i < N; i ++) {
+			if (list[i] >= 0) {
+				*s = list[i];
+				*e = list[i];
+				break;
+			}
+		}
+	}
 	return maxSum;
 }
 
