@@ -16,7 +16,7 @@ int main(void)
 
 	sum = maxsubseq2(A, len );
 	//printf("%d %d %d\n", sum, start, end);
-	printf("%d \n", sum);
+	printf("%d\n", sum);
 
 	return 0;
 }
