@@ -39,6 +39,7 @@ int main(void)
 	//disp
 	//ListDisp(pList);
 	pList = SortByAddr(pList, f_addr);
+	//ListDisp(pList);
 	ReversList(pList, r_N);
 	ListDisp(pList);
 	return 0;
