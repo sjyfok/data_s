@@ -62,6 +62,7 @@ void ReversList(PList pList, int r_N)
 					pTmp->next = prev;
 					pTmp->n_addr = prev->addr;
 				} else {
+//					prev->n_addr = pTmp->addr;
 					pafter = pTmp->next;
 					pTmp->next = NULL;
 					pGaplast = pTmp;
@@ -81,6 +82,8 @@ void ReversList(PList pList, int r_N)
 				pGaplast->n_addr = pafter->addr;
 			else
 				pGaplast->n_addr = -1;
+			if (pGap != pList)
+				pGap->n_addr = pTmp->addr;
 			pGap = pGaplast;
 			prev = pGap;
 			pTmp = pafter;
