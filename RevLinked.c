@@ -51,9 +51,9 @@ void ReversList(PList pList, int r_N)
 	PList pGap = pList;
 	PList prev = pList, pafter = NULL;
 	PList pGaplast = NULL;
-	if (pList->data < r_N)
+	if (pList->data < r_N || r_N == 1)
 		return ;
-	else {
+	else  {
 		while (pList->data+1-i >= r_N) { //i < pList->data+1) {
 			while(i%r_N != 0) {
 				if (prev != pGap) {
