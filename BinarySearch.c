@@ -51,7 +51,7 @@ Position BinarySearch(List L, ElementType X)
 	Position pi = 0;
 	Position lo = 1;
 	Position hi = L->Last;
-
+	
 	while(lo <= hi)
 	{
 		pi = lo+hi;

@@ -20,6 +20,26 @@ struct Que {
 	int cap;
 };
 
+PStack  InitStack(int size);
+void StackDestroy(PStack pstk);
+int StackFull(PStack pstk);
+int StackEmpty(PStack pstk);
+int StackPush(PStack pstk, ElemType elem);
+int StackPop(PStack pstk, ElemType *elem);
+int StackView(PStack pstk, ElemType *elem);
+void StackDisp(PStack pstk);
+
+
+PQue QueInit(int size);
+void QueDestroy(PQue QPtr);
+int QueFull(PQue QPtr);
+int QueEmpty(PQue QPtr);
+int QueInput(PQue QPtr, ElemType elem);
+int QueOutput(PQue QPtr, ElemType *elem);
+int QueView(PQue QPtr, ElemType *elem);
+void QueDisp(PQue QPtr);
+
+int PushSeqCheck(PStack pstk, PQue pque, int *pBuf, int Bufsize);
 int main(void)
 {
 	int StackCap, PushCnt, CheckCnt;
@@ -46,40 +66,70 @@ int main(void)
 		printf("\n");
 	}*/	
 	pstk = InitStack(StackCap);
-	pque = QueInit(PushCnt);
+	pque = QueInit(PushCnt+1);
 
 	for (i = 0; i < CheckCnt; i ++) {
+		pstk = InitStack(StackCap);
+		pque = QueInit(PushCnt+1);
+
 		for (j = 0; j < PushCnt; j ++) {
-			QueInput(pque, pArray[i*PushCnt+j]);
+//			printf("j = %d %d ", j, pArray[i*PushCnt+j]);
+			QueInput(pque, j+1);
 		}
+		//QueDisp(pque);
 		if (PushSeqCheck(pstk, pque, pArray+i*PushCnt, PushCnt))
 		{
 			printf("YES\n");
 		}
 		else
 			printf("NO\n");
+		QueDestroy(pque);
+		StackDestroy(pstk);
 	}
 }
 
-int PushSeqCheck(PStk pstk, PQue pque, int *pBuf, int Bufsize)
+int PushSeqCheck(PStack pstk, PQue pque, int *pBuf, int Bufsize)
 {
-	int i = 0;
+	int i = 0, ret = 0;
 	int elem, tmp;
-	for (i = 0; i < Bufsize; i ++) {
+//	printf("bufsize = %d\n", Bufsize);
+	while(i < Bufsize) {
 		elem = pBuf[i];
+//		printf("%d ", elem);
 		if (QueView(pque, &tmp)) {
 			if (tmp != elem) { //不是队头
-				if (StackView(pstk, &tmp)) {
-					if (tmp != elem)  //不是栈顶
-						return 0; //序列不能产生
-					else {
-						
-					}
-				} else
+				ret = StackView(pstk, &tmp);
+				if (ret == 0 || tmp != elem) {
+					QueOutput(pque, &tmp);
+					if (!StackPush(pstk, tmp))
+						return 0;
+					//QueDisp(pque);
+					//StackDisp(pstk);
+				} else if (tmp == elem) {
+					StackPop(pstk, &tmp);
+					//StackDisp(pstk);
+					i ++;
+				}
+			}
+			else { //是队头
+				if (StackFull(pstk))
 					return 0;
-			} else {
-				if (StackFull(pstk)) //是队头如果栈满
-					return 0;
+				else {
+					QueOutput(pque, &tmp);
+					//QueDisp(pque);
+					i ++;
+				}
+			}
+		}
+		else { //队已经空
+			if (!StackView(pstk, &tmp))
+				return 0;
+			else if (tmp != elem)
+				return 0;
+			else {
+				StackPop(pstk, &tmp);
+				//StackDisp(pstk);
+				i ++;
 			}
 		}
 	}
@@ -89,11 +139,17 @@ int PushSeqCheck(PStk pstk, PQue pque, int *pBuf, int Bufsize)
 //栈
 PStack  InitStack(int size)
 {
-	PStack *pStk;
+	PStack pStk = (PStack)malloc(sizeof(struct Stack));
 	pStk->pBase = (ElemType*)malloc(sizeof(ElemType)*size);
 	pStk->i_sp = 0;
 	pStk->cap = size;
 	return pStk;
+}
+
+void StackDestroy(PStack pstk)
+{
+	free(pstk->pBase);
+	free(pstk);
 }
 
 int StackFull(PStack pstk)
@@ -120,7 +176,7 @@ int  StackPush(PStack pstk, ElemType elem)
 
 int StackPop(PStack pstk, ElemType *elem)
 {
-	if (StackEmpty(pstk)
+	if (StackEmpty(pstk))
 		return 0;
 	*elem = pstk->pBase[--pstk->i_sp];
 	return 1;
@@ -133,15 +189,34 @@ int StackView(PStack pstk, ElemType *elem)
 	*elem = pstk->pBase[pstk->i_sp-1];
 	return 1;
 }
+
+void StackDisp(PStack pstk)
+{
+	int i = 0;
+	printf("Stack: ");
+	while (i < pstk->i_sp) {
+		printf("%d ", pstk->pBase[i]);
+		i ++;
+	}
+	printf("\n");
+}
+
+
 //队列
 PQue QueInit(int size)
 {
-	PQue QPtr;
-	
+	PQue QPtr = (PQue)malloc(sizeof(struct Que)); 
+
 	QPtr->pBase = (ElemType*)malloc(sizeof(ElemType)*size);
 	QPtr->cap = size;
 	QPtr->head = QPtr->tail = 0;
 	return QPtr;
+}
+
+void QueDestroy(PQue QPtr)
+{
+	free(QPtr->pBase);
+	free(QPtr);
 }
 
 int QueFull(PQue QPtr)
@@ -182,4 +257,17 @@ int QueView(PQue QPtr, ElemType *elem)
 		return 0;
 	*elem = QPtr->pBase[QPtr->head];
 	return 1;
+}
+
+void QueDisp(PQue QPtr)
+{
+	int i;
+	printf("Que: ");
+	i = QPtr->head;
+	while(i != QPtr->tail) {
+		printf("%d ", QPtr->pBase[i]);
+		i ++;
+		i %= QPtr->cap;
+	}
+	printf("\n");
 }
