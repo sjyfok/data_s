@@ -35,7 +35,7 @@ int main(void)
 		pTmp->next = pVal;
 		pTmp = pVal;		
 	}
-	printf("\n");
+//	printf("\n");
 	//disp
 	//ListDisp(pList);
 	pList = SortByAddr(pList, f_addr);
@@ -76,7 +76,10 @@ void ReversList(PList pList, int r_N)
 			pTmp->next = prev;
 			pTmp->n_addr = prev->addr;
 			pGaplast->next = pafter;
-			pGaplast->n_addr = pafter->addr;
+			if (pafter)
+				pGaplast->n_addr = pafter->addr;
+			else
+				pGaplast->n_addr = -1;
 			pGap = pGaplast;
 			prev = pGap;
 			pTmp = pafter;
