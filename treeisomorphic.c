@@ -46,7 +46,7 @@ int BuiltTree(struct TreeNode T[])
 	ElemType  cl, cr;
 	scanf("%d", &N);
 	if (N <= 0)
-		return 0;
+		return Null;
 	//printf("%d\n", N);
 	//确认根节点的位置
 
