@@ -19,20 +19,22 @@ struct TreeNode T1[MaxTree], T2[MaxTree];
 
 int BuiltTree(struct TreeNode T[]);
 void PreOrderTraversal(struct TreeNode T[], Tree R);
+int Isomorphic(Tree R1, Tree R2);
 
 int main(void)
 {
 	Tree R1, R2;
 
 	R1 = BuiltTree(T1);
-//	printf("%d\n", R1);
-	//R2 = BuiltTree(T2);
-	PreOrderTraversal(T1, R1);
-	printf("\n");
-	//if (Isomorphic(R1, R2))
-	//	printf("Yes\n");
-	//else
-	//	printf("No\n");
+	R2 = BuiltTree(T2);
+//	PreOrderTraversal(T1, R1);
+//	printf("\n");
+//	PreOrderTraversal(T2, R2);
+//	printf("\n");
+	if (Isomorphic(R1, R2))
+		printf("Yes\n");
+	else
+		printf("No\n");
 	return 0;
 }
 
@@ -104,4 +106,17 @@ void PreOrderTraversal(struct TreeNode T[], Tree R)
 	}
 }
 
-
+int Isomorphic(Tree R1, Tree R2)
+{
+	if ((R1 == Null) && (R2 == Null))
+		return 1;
+	if (((R1 == Null)&&(R2!= Null)) || ((R1 != Null)&&(R2 == Null)))
+		return 0;
+	if ((T1[R1].left == Null) && (T2[R2].left == Null))
+		return Isomorphic(T1[R1].right, T2[R2].right);
+	if (((T1[R1].left != Null)&&(T2[R2].left != Null)) &&
+		((T1[T1[R1].left].elem) == (T2[T2[R2].left].elem)))
+			return (Isomorphic(T1[R1].left, T2[R2].left) && Isomorphic(T1[R1].right, T2[R2].right));
+	else
+		return (Isomorphic(T1[R1].left, T2[R2].right) && Isomorphic(T1[R1].right, T2[R2].left));
+}
