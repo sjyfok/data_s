@@ -112,6 +112,9 @@ int Isomorphic(Tree R1, Tree R2)
 		return 1;
 	if (((R1 == Null)&&(R2!= Null)) || ((R1 != Null)&&(R2 == Null)))
 		return 0;
+	if ((T1[R1].left == Null) && (T2[R2].left == Null) && (T1[R1].right = Null) &&
+		(T2[R2].right == Null) && (T1[R1].elem != T2[R2].elem))
+		return 0;
 	if ((T1[R1].left == Null) && (T2[R2].left == Null))
 		return Isomorphic(T1[R1].right, T2[R2].right);
 	if (((T1[R1].left != Null)&&(T2[R2].left != Null)) &&
