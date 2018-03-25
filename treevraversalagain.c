@@ -58,21 +58,10 @@ int main(void)
 	PTree Tree;
 
 	Tree = BuiltTree();
-	//printf("%d", Tree);
 	LastOrderTraversal(Tree);
-//	R2 = BuiltTree(T2);
-//	PreOrderTraversal(T1, R1);
-//	len = LevelOrderTraversal(T1, R1, array);
 	for (i = 0; i < g_idx-1; i ++)
 		printf("%d ", array[i]);
 	printf("%d\n", array[i]);
-//	printf("\n");
-//	PreOrderTraversal(T2, R2);
-//	printf("\n");
-/*	if (Isomorphic(R1, R2))
-		printf("Yes\n");
-	else
-		printf("No\n");*/
 	return 0;
 }
 
@@ -141,55 +130,6 @@ PTree BuiltTree(void)
 //		printf("%s %d\n", input[i].inputStr, input[i].node);
 	}
 
-	
-
-/*
-	if (N <= 0)
-		return Null;
-	//printf("%d\n", N);
-	//确认根节点的位置
-
-	for(i = 0; i < N; i ++)
-		Check[i] = 0;
-
-	for(i = 0; i < N; i ++)
-	{
-		ElemType c;
-
-	//	scanf("%c ", &c);
-	//	while(c == '\n' || c == ' ') scanf("%c", &c);
-		T[i].elem = 'A'+i;
-		scanf("%c ", &c);
-		while(c == '\n' || c == ' ') scanf("%c", &c);
-		cl = c;
-		scanf("%c ", &c);
-		while(c == '\n' || c == ' ') scanf("%c", &c);
-		cr = c;
-
-//		while(scanf("%c %c %c\n", &T[i].elem,&cl,&cr);
-		//printf("%c %c %c\n", T[i].elem, cl, cr);
-		if (cl != '-') {
-			T[i].left = cl-0x30;
-			Check[T[i].left] = 1;
-		}
-		else T[i].left = Null;
-		
-		if (cr != '-') {
-			T[i].right = cr-0x30;
-			Check[T[i].right] = 1;
-		}
-		else T[i].right = Null; 
-	}
-
-	for(i = 0; i < N; i ++)
-	{
-		if (Check[i] == 0)
-			R = i;
-	}*/
-	/*for (i = 0; i < N; i ++)
-	{
-		printf("%c %d %d\n", T[i].elem, T[i].left, T[i].right);
-	}*/
 	return T;//R;
 }
 
@@ -207,30 +147,6 @@ void LastOrderTraversal(PTree T)
 		array[g_idx ++] = T->elem;
 	}
 }
-/*
-//层次遍历
-int  LevelOrderTraversal(struct TreeNode T[], Tree R, int trav[])
-{
-	PQue que;
-	Tree TN;
-	int i = 0;
-	que = QueInit(MaxTree);
-	if (R != Null) {
-		QueInput(que, R);
-		while (!QueEmpty(que)) {
-			QueOutput(que, &TN);
-			if((T[TN].left == Null) && (T[TN].right == Null))
-				trav[i ++] = TN;
-				//printf("%d", TN);
-			if (T[TN].left != Null)
-				QueInput(que, T[TN].left);
-			if (T[TN].right != Null)
-				QueInput(que, T[TN].right);
-		}
-	}
-	return i;	
-}
-*/
 
 //栈
 PStack  InitStack(int size)
