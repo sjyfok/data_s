@@ -47,19 +47,25 @@ struct TreeNode
 PTree  BuiltTree(void);
 //void PreOrderTraversal(struct TreeNode T[], Tree R);
 //int  LevelOrderTraversal(struct TreeNode T[], Tree R, int trav[]);
+void LastOrderTraversal(PTree T);
+
+TElemType array[MaxTree];
+int g_idx = 0;
 
 int main(void)
 {
-	int  len, i;
+	int   i;
 	PTree Tree;
 
 	Tree = BuiltTree();
+	//printf("%d", Tree);
+	LastOrderTraversal(Tree);
 //	R2 = BuiltTree(T2);
 //	PreOrderTraversal(T1, R1);
 //	len = LevelOrderTraversal(T1, R1, array);
-//	for (i = 0; i < len-1; i ++)
-//		printf("%d ", array[i]);
-//	printf("%d\n", array[i]);
+	for (i = 0; i < g_idx-1; i ++)
+		printf("%d ", array[i]);
+	printf("%d\n", array[i]);
 //	printf("\n");
 //	PreOrderTraversal(T2, R2);
 //	printf("\n");
@@ -79,11 +85,12 @@ PTree BuiltTree(void)
 	int Dir = 0; //表示入栈
 	int N, i;
 
-	scanf("%d", &N);
+	scanf("%d\n", &N);
 	for (i = 0; i < 2*N; i ++)
 	{
 //		fgets(input[i], 8, stdin);
-		scanf("%s ", input[i].inputStr);
+		scanf("%s", input[i].inputStr);
+		//gets(input[i].inputStr);
 		if (!strncmp("Push", input[i].inputStr, 4))
 			scanf("%d\n", &input[i].node);
 		else
@@ -108,7 +115,7 @@ PTree BuiltTree(void)
 			else
 			{
 				StackPop(pstk, &pMid);
-				if (Dir = 0)
+				if (Dir == 0)
 				{
 					pMid->left = Tmp;
 				}
@@ -131,7 +138,7 @@ PTree BuiltTree(void)
 				StackPop(pstk, &pMid);
 			}
 		}
-		//printf("%s %d\n", input[i].inputStr, input[i].node);
+//		printf("%s %d\n", input[i].inputStr, input[i].node);
 	}
 
 	
@@ -183,23 +190,24 @@ PTree BuiltTree(void)
 	{
 		printf("%c %d %d\n", T[i].elem, T[i].left, T[i].right);
 	}*/
-	return 0;//R;
+	return T;//R;
 }
 
-//先序遍历树
-/*void PreOrderTraversal(struct TreeNode T[], Tree R)
+//后序遍历树
+//int LastOrderTraversal(PTree T, TElemType trav[])
+void LastOrderTraversal(PTree T)
 {
 	//printf("R= %d", R);
-	if (R != Null)
+	if (T != NULL)
 	{
-		//printf("%c", T[R].elem);
-		if (T[R].left == Null && T[R].right == Null)
-			printf("%d", R);
-		PreOrderTraversal(T, T[R].left);
-		PreOrderTraversal(T, T[R].right);
+		//printf("lll");
+		LastOrderTraversal(T->left);
+		LastOrderTraversal(T->right);
+		//printf("%d", T->elem);
+		array[g_idx ++] = T->elem;
 	}
 }
-
+/*
 //层次遍历
 int  LevelOrderTraversal(struct TreeNode T[], Tree R, int trav[])
 {
