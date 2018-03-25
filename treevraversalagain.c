@@ -99,7 +99,7 @@ PTree BuiltTree(void)
 			if (T == NULL)
 			{
 				T = Tmp;
-				Dir = 0;
+				//Dir = 0;
 			}
 			else
 			{
@@ -115,6 +115,7 @@ PTree BuiltTree(void)
 				StackPush(pstk, &pMid);
 			}
 			StackPush(pstk, &Tmp);
+			Dir = 0;
 		}
 		else   //pop
 		{
