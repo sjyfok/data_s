@@ -107,26 +107,23 @@ PTree BuiltTree(void)
 				if (Dir == 0)
 				{
 					pMid->left = Tmp;
+					StackPush(pstk, &pMid);
 				}
 				else
 				{
 					pMid->right = Tmp;					
 				}
-				StackPush(pstk, &pMid);
 			}
 			StackPush(pstk, &Tmp);
 			Dir = 0;
 		}
 		else   //pop
 		{
-			if (Dir == 0)
-			{
-				Dir = 1;
-			}
-			else
+			if (Dir == 1)
 			{
 				StackPop(pstk, &pMid);
 			}
+			Dir = 1;
 		}
 //		printf("%s %d\n", input[i].inputStr, input[i].node);
 	}
