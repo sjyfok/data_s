@@ -47,26 +47,21 @@ struct TreeNode
 PTree  BuiltTree(void);
 //void PreOrderTraversal(struct TreeNode T[], Tree R);
 //int  LevelOrderTraversal(struct TreeNode T[], Tree R, int trav[]);
+void LastOrderTraversal(PTree T);
+
+TElemType array[MaxTree];
+int g_idx = 0;
 
 int main(void)
 {
-	int  len, i;
+	int   i;
 	PTree Tree;
 
 	Tree = BuiltTree();
-//	R2 = BuiltTree(T2);
-//	PreOrderTraversal(T1, R1);
-//	len = LevelOrderTraversal(T1, R1, array);
-//	for (i = 0; i < len-1; i ++)
-//		printf("%d ", array[i]);
-//	printf("%d\n", array[i]);
-//	printf("\n");
-//	PreOrderTraversal(T2, R2);
-//	printf("\n");
-/*	if (Isomorphic(R1, R2))
-		printf("Yes\n");
-	else
-		printf("No\n");*/
+	LastOrderTraversal(Tree);
+	for (i = 0; i < g_idx-1; i ++)
+		printf("%d ", array[i]);
+	printf("%d\n", array[i]);
 	return 0;
 }
 
@@ -79,11 +74,12 @@ PTree BuiltTree(void)
 	int Dir = 0; //表示入栈
 	int N, i;
 
-	scanf("%d", &N);
+	scanf("%d\n", &N);
 	for (i = 0; i < 2*N; i ++)
 	{
 //		fgets(input[i], 8, stdin);
-		scanf("%s ", input[i].inputStr);
+		scanf("%s", input[i].inputStr);
+		//gets(input[i].inputStr);
 		if (!strncmp("Push", input[i].inputStr, 4))
 			scanf("%d\n", &input[i].node);
 		else
@@ -103,126 +99,52 @@ PTree BuiltTree(void)
 			if (T == NULL)
 			{
 				T = Tmp;
-				Dir = 0;
+				//Dir = 0;
 			}
 			else
 			{
 				StackPop(pstk, &pMid);
-				if (Dir = 0)
+				if (Dir == 0)
 				{
 					pMid->left = Tmp;
+					StackPush(pstk, &pMid);
 				}
 				else
 				{
 					pMid->right = Tmp;					
 				}
-				StackPush(pstk, &pMid);
 			}
 			StackPush(pstk, &Tmp);
+			Dir = 0;
 		}
 		else   //pop
 		{
-			if (Dir == 0)
-			{
-				Dir = 1;
-			}
-			else
+			if (Dir == 1)
 			{
 				StackPop(pstk, &pMid);
 			}
+			Dir = 1;
 		}
-		//printf("%s %d\n", input[i].inputStr, input[i].node);
+//		printf("%s %d\n", input[i].inputStr, input[i].node);
 	}
 
-	
-
-/*
-	if (N <= 0)
-		return Null;
-	//printf("%d\n", N);
-	//确认根节点的位置
-
-	for(i = 0; i < N; i ++)
-		Check[i] = 0;
-
-	for(i = 0; i < N; i ++)
-	{
-		ElemType c;
-
-	//	scanf("%c ", &c);
-	//	while(c == '\n' || c == ' ') scanf("%c", &c);
-		T[i].elem = 'A'+i;
-		scanf("%c ", &c);
-		while(c == '\n' || c == ' ') scanf("%c", &c);
-		cl = c;
-		scanf("%c ", &c);
-		while(c == '\n' || c == ' ') scanf("%c", &c);
-		cr = c;
-
-//		while(scanf("%c %c %c\n", &T[i].elem,&cl,&cr);
-		//printf("%c %c %c\n", T[i].elem, cl, cr);
-		if (cl != '-') {
-			T[i].left = cl-0x30;
-			Check[T[i].left] = 1;
-		}
-		else T[i].left = Null;
-		
-		if (cr != '-') {
-			T[i].right = cr-0x30;
-			Check[T[i].right] = 1;
-		}
-		else T[i].right = Null; 
-	}
-
-	for(i = 0; i < N; i ++)
-	{
-		if (Check[i] == 0)
-			R = i;
-	}*/
-	/*for (i = 0; i < N; i ++)
-	{
-		printf("%c %d %d\n", T[i].elem, T[i].left, T[i].right);
-	}*/
-	return 0;//R;
+	return T;//R;
 }
 
-//先序遍历树
-/*void PreOrderTraversal(struct TreeNode T[], Tree R)
+//后序遍历树
+//int LastOrderTraversal(PTree T, TElemType trav[])
+void LastOrderTraversal(PTree T)
 {
 	//printf("R= %d", R);
-	if (R != Null)
+	if (T != NULL)
 	{
-		//printf("%c", T[R].elem);
-		if (T[R].left == Null && T[R].right == Null)
-			printf("%d", R);
-		PreOrderTraversal(T, T[R].left);
-		PreOrderTraversal(T, T[R].right);
+		//printf("lll");
+		LastOrderTraversal(T->left);
+		LastOrderTraversal(T->right);
+		//printf("%d", T->elem);
+		array[g_idx ++] = T->elem;
 	}
 }
-
-//层次遍历
-int  LevelOrderTraversal(struct TreeNode T[], Tree R, int trav[])
-{
-	PQue que;
-	Tree TN;
-	int i = 0;
-	que = QueInit(MaxTree);
-	if (R != Null) {
-		QueInput(que, R);
-		while (!QueEmpty(que)) {
-			QueOutput(que, &TN);
-			if((T[TN].left == Null) && (T[TN].right == Null))
-				trav[i ++] = TN;
-				//printf("%d", TN);
-			if (T[TN].left != Null)
-				QueInput(que, T[TN].left);
-			if (T[TN].right != Null)
-				QueInput(que, T[TN].right);
-		}
-	}
-	return i;	
-}
-*/
 
 //栈
 PStack  InitStack(int size)
