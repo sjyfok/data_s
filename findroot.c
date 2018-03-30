@@ -3,6 +3,11 @@
 
 #define		MaxSize		20
 
+#define		EH	 0
+#define		LH	 1
+#define		RH	-1
+
+
 typedef int TElemType;
 typedef struct TreeNode *PAVLTree;
 struct TreeNode
@@ -17,7 +22,7 @@ struct TreeNode
 
 PAVLTree  BuiltAVLTree(TElemType inser[], int N);
 void PreOrderTraversal(PAVLTree  T);
-void InsertAVL(PAVLTree *T, TElemType e);
+int InsertAVL(PAVLTree *T, TElemType e, int *taller);
 
 int main(void)
 {
@@ -54,21 +59,78 @@ PAVLTree BuiltAVLTree(TElemType inser[], int N)
 	return T;
 }
 
-void InsertAVL(PAVLTree *T, TElemType e)
+int InsertAVL(PAVLTree *T, TElemType e, int *taller)
 {
 
 	if (!(*T)) {
 		(*T) = (PAVLTree)malloc(sizeof(struct TreeNode));
 		(*T)->left = (*T)->right = NULL;
 		(*T)->data = e;
-		(*T)->bf = 0;
+		(*T)->bf = EH;
+		*taller = 1;
+		return 1;
 	}
 	else {
 		if (e < (*T)->data) {
-			InsertAVL(&((*T)->left), e);
+			if (InsertAVL(&((*T)->left), e, taller)) {
+				if (*taller) {
+					switch ((*T)->bf) {
+					case LH:
+						LeftBalance(T);
+						*taller = 0;
+						break;
+					case EH:
+						(*T)->bf = LH;
+						*taller = 1;
+						break;
+					case RH:
+						(*T)->bf = EH;
+						*taller = 0;
+						break;
+					default:
+						return 0;
+					}
+				}
+			}
 		}
 		else {
-			InsertAVL(&((*T)->right), e);
+			if (InsertAVL(&((*T)->right), e, taller)) {
+				if (*taller) {
+					switch ((*T)->bf) {
+					case LH:
+						(*T)->bf = EH;
+						*taller = 0;
+						break;
+					case EH:
+						(*T)->bf = RH;
+						*taller = 1;
+						break;
+					case RH:
+						RightBalance(*T);
+						*taller = 0;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+void LeftBalance(PAVLTree *T)
+{
+	PAVLTree *lc;
+	lc = (*T)->left;
+	switch(lc->bf) {
+	case LH:
+		(*T)->bf = lc->bf = EH;
+		R_Rotate(*T);
+		break;
+	case RH:
+		rd = lc->right;
+		switch(rd->bf) {
+		case LH:
 		}
 	}
 }
