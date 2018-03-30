@@ -23,6 +23,10 @@ struct TreeNode
 PAVLTree  BuiltAVLTree(TElemType inser[], int N);
 void PreOrderTraversal(PAVLTree  T);
 int InsertAVL(PAVLTree *T, TElemType e, int *taller);
+void LeftBalance(PAVLTree *T);
+void RightBalance(PAVLTree *T);
+void R_Rotate(PAVLTree *T);
+void L_Rotate(PAVLTree *T);
 
 int main(void)
 {
@@ -35,9 +39,9 @@ int main(void)
 		scanf("%d", &inser[i]); 
 	}
 	T = BuiltAVLTree(inser, N);
-	PreOrderTraversal(T);
-//	if (T)
-//		printf("%d\n", T->data);
+//	PreOrderTraversal(T);
+	if (T)
+		printf("%d\n", T->data);
 	return 0;
 }
 
@@ -45,10 +49,10 @@ PAVLTree BuiltAVLTree(TElemType inser[], int N)
 {
 	//输入
 	PAVLTree T = NULL;
-	int i, V;
+	int i, V, taller;
 	
 	for (i = 0; i < N; i ++) {
-		InsertAVL(&T, inser[i]);
+		InsertAVL(&T, inser[i], &taller);
 	}
 
 	/*scanf("%d", &V);
@@ -106,33 +110,102 @@ int InsertAVL(PAVLTree *T, TElemType e, int *taller)
 						*taller = 1;
 						break;
 					case RH:
-						RightBalance(*T);
+						RightBalance(T);
 						*taller = 0;
 						break;
+					default:
+						return 0;
 					}
 				}
 			}
 		}
 	}
 
-	return 0;
+	return 1;
 }
 
 void LeftBalance(PAVLTree *T)
 {
-	PAVLTree *lc;
+	PAVLTree lc, rd;
 	lc = (*T)->left;
 	switch(lc->bf) {
 	case LH:
 		(*T)->bf = lc->bf = EH;
-		R_Rotate(*T);
+		R_Rotate(T);
 		break;
 	case RH:
 		rd = lc->right;
 		switch(rd->bf) {
 		case LH:
+			(*T)->bf = RH;
+			lc->bf = EH;
+			break;
+		case EH:
+			(*T)->bf = lc->bf = EH;
+			break;
+		case RH:
+			(*T)->bf = EH;
+			lc->bf = LH;
+			break;
+		default:
+			break;			
 		}
+		rd->bf = EH;
+		L_Rotate(&((*T)->left));
+		R_Rotate(T);
+	default:
+		break;
 	}
+}
+
+void RightBalance(PAVLTree *T)
+{
+	PAVLTree rc, ld;
+	rc = (*T)->right;
+	switch(rc->bf) {
+	case RH:
+		(*T)->bf = EH;
+		rc->bf = EH;
+		L_Rotate(T);
+		break;
+	case LH:
+		ld = rc->left;
+		switch(ld->bf) {
+		case RH:
+			(*T)->bf = rc->bf = EH;
+			break;
+		case EH:
+			(*T)->bf = rc->bf = EH;
+			break;
+		case LH:
+			(*T)->bf = EH;
+			rc->bf = RH;
+			break;
+		default :
+			break;
+		}
+		ld->bf = EH;
+		R_Rotate(&((*T)->right));
+		L_Rotate(T);
+	default :
+		break;
+	}
+}
+
+void R_Rotate(PAVLTree *T)
+{
+	PAVLTree lc = (*T)->left;
+	(*T)->left = lc->right;
+	lc->right = (*T);
+	(*T) = lc;
+}
+
+void L_Rotate(PAVLTree *T)
+{
+	PAVLTree rc = (*T)->right;
+	(*T)->right = rc->left;
+	rc->left = (*T);
+	(*T) = rc;
 }
 
 //先序遍历树
