@@ -76,46 +76,46 @@ int InsertAVL(PAVLTree *T, TElemType e, int *taller)
 	}
 	else {
 		if (e < (*T)->data) {
-			if (InsertAVL(&((*T)->left), e, taller)) {
-				if (*taller) {
-					switch ((*T)->bf) {
-					case LH:
-						LeftBalance(T);
-						*taller = 0;
-						break;
-					case EH:
-						(*T)->bf = LH;
-						*taller = 1;
-						break;
-					case RH:
-						(*T)->bf = EH;
-						*taller = 0;
-						break;
-					default:
-						return 0;
-					}
+			if (!InsertAVL(&((*T)->left), e, taller)) 
+				return 0;
+			if (*taller) {
+				switch ((*T)->bf) {
+				case LH:
+					LeftBalance(T);
+					*taller = 0;
+					break;
+				case EH:
+					(*T)->bf = LH;
+					*taller = 1;
+					break;
+				case RH:
+					(*T)->bf = EH;
+					*taller = 0;
+					break;
+				default:
+					return 0;
 				}
 			}
 		}
 		else {
-			if (InsertAVL(&((*T)->right), e, taller)) {
-				if (*taller) {
-					switch ((*T)->bf) {
-					case LH:
-						(*T)->bf = EH;
-						*taller = 0;
-						break;
-					case EH:
-						(*T)->bf = RH;
-						*taller = 1;
-						break;
-					case RH:
-						RightBalance(T);
-						*taller = 0;
-						break;
-					default:
-						return 0;
-					}
+			if (!InsertAVL(&((*T)->right), e, taller)) 
+				return 0;
+			if (*taller) {
+				switch ((*T)->bf) {
+				case LH:
+					(*T)->bf = EH;
+					*taller = 0;
+					break;
+				case EH:
+					(*T)->bf = RH;
+					*taller = 1;
+					break;
+				case RH:
+					RightBalance(T);
+					*taller = 0;
+					break;
+				default:
+					return 0;
 				}
 			}
 		}
@@ -172,7 +172,9 @@ void RightBalance(PAVLTree *T)
 		ld = rc->left;
 		switch(ld->bf) {
 		case RH:
-			(*T)->bf = rc->bf = EH;
+			//(*T)->bf = rc->bf = EH;
+			(*T)->bf = LH;
+			rc->bf = EH;
 			break;
 		case EH:
 			(*T)->bf = rc->bf = EH;
