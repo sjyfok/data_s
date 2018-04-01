@@ -49,16 +49,18 @@ void SortInc(TElemType inser[], int N);
 void DispSort(TElemType inser[], int N);
 int GetCBTDepth(int nodecnt);
 int GetCBSTRCNodeCnt(int depth, int cbstnodetol);
-PBinTree  BuildTree(TElemType inser[], int S,  int E, int R_pos);
+PBinTree  BuildTree(TElemType inser[], int N);
 PBinTree BuildPBSTree(TElemType inser[], int N);
 void PreOrderTraversal(PBinTree  T);
 void   LevelOrderTraversal(PBinTree  T,  int trav[]);
+int GetPBTFloorNodeCnt(int floor);
+int GetPBTNodeTolDueDepth(int depth);
 
 int main(void)
 {
 	int N, i, rnodecnt;
 	TElemType inser[MaxSize];
-	int depth, R;
+	int trav[MaxSize];
 	PBinTree T;
 
 	//读入输入序列
@@ -68,23 +70,131 @@ int main(void)
 	}
 	//对输入数据进行排序
 	SortInc(inser, N);
-	DispSort(inser, N);
-	depth = GetCBTDepth(N); //获得完全二叉树深度
-	printf("D=%d\n", depth);
-	rnodecnt = GetCBSTRCNodeCnt(depth, N);
-	printf("RC=%d\n", rnodecnt);
+//	DispSort(inser, N);
+//	depth = GetCBTDepth(N); //获得完全二叉树深度
+//	printf("D=%d\n", depth);
+//	rnodecnt = GetCBSTRCNodeCnt(depth, N);
+//	printf("RC=%d\n", rnodecnt);
 	//建立树 由根节点位置和一个中序遍历序列
-	R = N-rnodecnt-1;
-	printf("R = %d: %d\n", R, inser[R]);
-	T = BuildTree(inser, N, R);
+//	R = N-rnodecnt-1;
+//	printf("R = %d: %d\n", R, inser[R]);
+	T = BuildTree(inser, N);
 	//T = BuildPBSTree(inser, N);
-	PreOrderTraversal(T);
+	//PreOrderTraversal(T);
+  LevelOrderTraversal(T, trav);
+	for (i = 0; i < N; i ++)
+		printf("%d ", trav[i]);
+	printf("\n");
+
 //	if (T)
 //		printf("%d\n", T->data);
 	return 0;
 }
 
 PBinTree  BuildTree(TElemType inser[], int N)
+{
+	PBinTree T = NULL;
+	int depth, rem_N;
+	int nodecnt;
+
+	switch(N)
+	{
+		case 0:
+			return T;
+		case 1:
+			T = (PBinTree)malloc(sizeof(struct TreeNode));
+			T->data = inser[0];
+			T->left = T->right = NULL;
+			return T;
+		case 2:
+			T = (PBinTree)malloc(sizeof(struct TreeNode));
+			T->data = inser[1];
+			T->right = NULL;
+			T->left = (PBinTree)malloc(sizeof(struct TreeNode));
+			T->left->data = inser[0];
+			T->left->left = T->left->right = NULL;
+			return T;
+		default:
+			depth = GetCBTDepth(N);
+			nodecnt = GetPBTNodeTolDueDepth(depth);
+			if (nodecnt == N)
+			{
+				T = BuildPBSTree(inser, N);
+			} else
+			{
+				int node, tmp, R_pos; //不完美的个数
+				node = GetPBTNodeTolDueDepth(depth-1);
+				node = N-node;
+				tmp  = GetPBTFloorNodeCnt(depth-1);
+				if (node < tmp) //右子树是完美二叉树
+				{
+					int rnodecnt = GetPBTNodeTolDueDepth(depth-2);//减去根节点层和最后的不满层 // GetCBSTRCNodeCnt(depth, N);
+					R_pos = N-rnodecnt-1;
+					//建立根
+					T = (PBinTree)malloc(sizeof(struct TreeNode));
+					T->data = inser[R_pos];
+					T->right = BuildPBSTree(&inser[R_pos+1], N-R_pos-1);
+					T->left = BuildTree(inser, R_pos);
+				}
+				else //左子树是完美二叉树
+				{
+					int lnodecnt = GetPBTNodeTolDueDepth(depth-1); //减去根节点层
+					R_pos = lnodecnt;
+					//建立根
+					T = (PBinTree)malloc(sizeof(struct TreeNode));
+					T->data = inser[R_pos];
+					T->left = BuildPBSTree(inser, lnodecnt);
+					T->right = BuildTree(&inser[R_pos+1], (N-lnodecnt));
+				}
+			}
+			return T;
+	}
+
+/*
+	rem_N = N;
+	while (rem_N > 0)
+	{
+		depth = GetCBTDepth(rem_N);
+		nodecnt =  GetPBTNodeTolDueDepth(depth);
+		if (nodecnt == rem_N)  //完美二叉搜索树
+		{
+			if (T == NULL)
+				T = BuildPBSTree(inser, rem_N);
+			else
+				T->left = BuildPBSTree(inser, rem_N);
+			break;
+		}
+		else
+		{
+				rnodecnt = GetCBSTRCNodeCnt(depth, rem_N);
+				R_pos = rem_N-rnodecnt-1;
+		
+				//建立根
+				T = (PBinTree)malloc(sizeof(struct TreeNode));
+				T->data = inser[R_pos];
+				T->left = T->right = NULL;
+				//右子树已经是完美二叉搜索树
+				T->right = BuildPBSTree(&inser[R_pos+1], rem_N-R_pos-1);
+				rem_N = R_Pos;
+		}		
+	}*/
+	return T;	
+}
+
+//得到指定层数的节点树 完美二叉树
+int GetPBTFloorNodeCnt(int floor)
+{
+	int ret = 1, f;
+
+	for (f = 1; f < floor; f ++)
+	{
+		ret *= 2;
+	}
+	return ret;
+}
+
+/*
+PBinTree  BuildTreeE(TElemType inser[], int N)
 {
 	PBinTree T = NULL;
 	int depth, rem_N;
@@ -118,6 +228,7 @@ PBinTree  BuildTree(TElemType inser[], int N)
 	}
 	return T;	
 }
+*/
 
 //建立完美二叉搜索树 输入节点列表 和节点个数
 PBinTree BuildPBSTree(TElemType inser[], int N)
@@ -246,8 +357,8 @@ void   LevelOrderTraversal(PBinTree  T,  int trav[])
 		QueInput(que, *T);
 		while (!QueEmpty(que)) {
 			QueOutput(que, &TN);
-			printf("%d ", TN.data);
-
+			//printf("%d ", TN.data);
+			trav[i++] = TN.data;
 			if (TN.left != NULL)
 				QueInput(que, *(TN.left));
 			if (TN.right != NULL)
