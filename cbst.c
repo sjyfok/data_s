@@ -82,9 +82,9 @@ int main(void)
 	//T = BuildPBSTree(inser, N);
 	//PreOrderTraversal(T);
   LevelOrderTraversal(T, trav);
-	for (i = 0; i < N; i ++)
+	for (i = 0; i < N-1; i ++)
 		printf("%d ", trav[i]);
-	printf("\n");
+	printf("%d\n", trav[i]);
 
 //	if (T)
 //		printf("%d\n", T->data);
