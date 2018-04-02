@@ -56,9 +56,9 @@ int main(void)
 	//读取测试数据
 /*	FILE *fp = fopen("test.file", "r");
 	fscanf(fp, "%d", &N);
-	printf("N= %d\n", N);
+//	printf("N= %d\n", N);
 	for (i = 0; i < N; i ++)
-		fscanf(fp, "%d", &inser[i]); */
+		fscanf(fp, "%d", &inser[i]);  */
 	/////////////////////////////////
 	//读入输入序列
 	scanf("%d", &N);
@@ -68,7 +68,7 @@ int main(void)
 	//对输入数据进行排序
 	//SortInc(inser, N);
 	qsort(inser, N, sizeof(TElemType), cmp);
-	DispSort(inser, N);
+	//DispSort(inser, N);
 	T = BuildTree(inser, N);
   LevelOrderTraversal(T);
 	for (i = 0; i < N-1; i ++)
@@ -113,7 +113,19 @@ PBinTree  BuildTree(TElemType inser[], int N)
 				node = GetPBTNodeTolDueDepth(depth-1);
 				node = N-node;
 				tmp  = GetPBTFloorNodeCnt(depth-1);
-				if (node < tmp) //右子树是完美二叉树
+				if (node == tmp)  //左右都是完美二叉树
+				{
+					int rnodecnt = GetPBTNodeTolDueDepth(depth-2);
+					R_pos = N-rnodecnt-1;
+
+					//建立根
+					T = (PBinTree)malloc(sizeof(struct TreeNode));
+					T->data = inser[R_pos];
+					T->right = BuildPBSTree(&inser[R_pos+1], N-R_pos-1);
+					T->left =  BuildPBSTree(inser, R_pos);
+
+				}
+				else	if (node < tmp) //右子树是完美二叉树
 				{
 					int rnodecnt = GetPBTNodeTolDueDepth(depth-2);//减去根节点层和最后的不满层 // GetCBSTRCNodeCnt(depth, N);
 					R_pos = N-rnodecnt-1;
@@ -131,7 +143,7 @@ PBinTree  BuildTree(TElemType inser[], int N)
 					T = (PBinTree)malloc(sizeof(struct TreeNode));
 					T->data = inser[R_pos];
 					T->left = BuildPBSTree(inser, lnodecnt);
-					T->right = BuildTree(&inser[R_pos+1], (N-lnodecnt));
+					T->right = BuildTree(&inser[R_pos+1], (N-lnodecnt-1));
 				}
 			}
 			return T;
