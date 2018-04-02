@@ -44,18 +44,18 @@ int GetCBSTRCNodeCnt(int depth, int cbstnodetol);
 PBinTree  BuildTree(TElemType inser[], int N);
 PBinTree BuildPBSTree(TElemType inser[], int N);
 void PreOrderTraversal(PBinTree  T);
-void   LevelOrderTraversal(PBinTree  T);
+void   LevelOrderTraversal(PBinTree  T, int trav[]);
 int GetPBTFloorNodeCnt(int floor);
 int GetPBTNodeTolDueDepth(int depth);
 int cmp(const void *a, const void *b);
 
-int trav[MaxSize];
 
 int main(void)
 {
 	int N, i, rnodecnt;
 	PBinTree T;
 	TElemType inser[MaxSize];
+	int trav[MaxSize];
 	/////////////////////////////////
 	//读取测试数据
 /*	FILE *fp = fopen("test.file", "r");
@@ -74,7 +74,7 @@ int main(void)
 	qsort(inser, N, sizeof(TElemType), cmp);
 	//DispSort(inser, N);
 	T = BuildTree(inser, N);
-  LevelOrderTraversal(T);
+  LevelOrderTraversal(T, trav);
 	for (i = 0; i < N-1; i ++)
 		printf("%d ", trav[i]);
 	printf("%d\n", trav[i]);
@@ -292,7 +292,7 @@ void PreOrderTraversal(PBinTree  T)
 
 
 //层次遍历
-void   LevelOrderTraversal(PBinTree  T )
+void   LevelOrderTraversal(PBinTree  T , int trav[])
 {
 	PQue que;
 	int i = 0;
