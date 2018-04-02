@@ -5,7 +5,7 @@
 完全二叉搜索树的右子树一定是完美二叉树，从而得到右子树的节点个数，也就得到了
 根节点的位置，得到根节点后，就可以建立树，再做层次遍历。
 */
-#define		MaxSize		1005
+#define		MaxSize		1001
 
 typedef int TElemType;
 typedef struct TreeNode  ElemType;
@@ -55,6 +55,7 @@ void PreOrderTraversal(PBinTree  T);
 void   LevelOrderTraversal(PBinTree  T,  int trav[]);
 int GetPBTFloorNodeCnt(int floor);
 int GetPBTNodeTolDueDepth(int depth);
+int cmp(const void *a, const void *b);
 
 int main(void)
 {
@@ -69,7 +70,8 @@ int main(void)
 		scanf("%d", &inser[i]); 
 	}
 	//对输入数据进行排序
-	SortInc(inser, N);
+	//SortInc(inser, N);
+	qsort(inser, N, sizeof(TElemType), cmp);
 //	DispSort(inser, N);
 //	depth = GetCBTDepth(N); //获得完全二叉树深度
 //	printf("D=%d\n", depth);
@@ -193,43 +195,6 @@ int GetPBTFloorNodeCnt(int floor)
 	return ret;
 }
 
-/*
-PBinTree  BuildTreeE(TElemType inser[], int N)
-{
-	PBinTree T = NULL;
-	int depth, rem_N;
-
-	rem_N = N;
-	while (rem_N > 0)
-	{
-		depth = GetCBTDepth(rem_N);
-		nodecnt =  GetPBTNodeTolDueDepth(depth);
-		if (nodecnt == rem_N)  //完美二叉搜索树
-		{
-			if (T == NULL)
-				T = BuildPBSTree(inser, rem_N);
-			else
-				T->left = BuildPBSTree(inser, rem_N);
-			break;
-		}
-		else
-		{
-				rnodecnt = GetCBSTRCNodeCnt(depth, rem_N);
-				R_pos = rem_N-rnodecnt-1;
-		
-				//建立根
-				T = (PBinTree)malloc(sizeof(struct TreeNode));
-				T->data = inser[R_pos];
-				T->left = T->right = NULL;
-				//右子树已经是完美二叉搜索树
-				T->right = BuildPBSTree(&inser[R_pos+1], rem_N-R_pos-1);
-				rem_N = R_Pos;
-		}		
-	}
-	return T;	
-}
-*/
-
 //建立完美二叉搜索树 输入节点列表 和节点个数
 PBinTree BuildPBSTree(TElemType inser[], int N)
 {
@@ -310,6 +275,13 @@ void DispSort(TElemType inser[], int N)
 	for (i = 0; i < N; i ++)
 		printf("%d ", inser[i]);
 	printf("\n");
+}
+
+int cmp(const void *a, const void *b)
+{
+	int *pa = (int*)a;
+	int *pb = (int*)b;
+	return *pa-*pb;
 }
 
 void SortInc(TElemType inser[], int N)
