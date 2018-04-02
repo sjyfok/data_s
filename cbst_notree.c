@@ -19,6 +19,15 @@ int main(void)
 {
 	int i;
 
+	/////////////////////////////////
+	//读取测试数据
+/*	FILE *fp = fopen("test.file", "r");
+	fscanf(fp, "%d", &N);
+//	printf("N= %d\n", N);
+	for (i = 0; i < N; i ++)
+		fscanf(fp, "%d", &node[i]);  */
+	/////////////////////////////////
+		
 	//读入输入序列
 	scanf("%d", &N);
 	for (i = 0; i < N; i ++) {

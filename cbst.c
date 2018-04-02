@@ -2,7 +2,11 @@
 #include <stdlib.h>
 
 #define		MaxSize		1001
-
+/*
+采用了建树的方法，但是可以不建树，可以在此基础上修改，
+根据左右子树至少有个完美的二叉搜索树来确定根节点，序列由
+小到大排列，就死完美二叉搜索树的中序遍历
+*/
 typedef int TElemType;
 typedef struct TreeNode  ElemType;
 
