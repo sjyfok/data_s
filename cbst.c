@@ -5,7 +5,7 @@
 完全二叉搜索树的右子树一定是完美二叉树，从而得到右子树的节点个数，也就得到了
 根节点的位置，得到根节点后，就可以建立树，再做层次遍历。
 */
-#define		MaxSize		1000
+#define		MaxSize		1005
 
 typedef int TElemType;
 typedef struct TreeNode  ElemType;
