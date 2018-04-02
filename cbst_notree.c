@@ -1,10 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/*完全二叉搜索树的中序遍历就是从小到大有序的序列，因此排序得到中序遍历
-完全二叉搜索树的右子树一定是完美二叉树，从而得到右子树的节点个数，也就得到了
-根节点的位置，得到根节点后，就可以建立树，再做层次遍历。
-*/
 #define		MaxSize		1001
 
 typedef int TElemType;
@@ -12,6 +8,7 @@ typedef int TElemType;
 void SortInc(TElemType inser[], int N);
 void DispSort(TElemType inser[], int N);
 void  Build(int root);
+int cmp(const void *a, const void *b);
 
 int node[MaxSize];
 int tree[MaxSize];
@@ -28,7 +25,8 @@ int main(void)
 		scanf("%d", &node[i]); 
 	}
 	//对输入数据进行排序
-	SortInc(node, N);
+	qsort(node, N, sizeof(int), cmp);
+	//SortInc(node, N);
 	pos = 0;
 	Build(1);
 
@@ -37,6 +35,13 @@ int main(void)
 	printf("%d\n", tree[i]);
 
 	return 0;
+}
+
+int cmp(const void *a, const void *b)
+{
+	int *pa = (int*)a;
+	int *pb = (int*)b;
+	return *pa-*pb;
 }
 
 void  Build(int root)
