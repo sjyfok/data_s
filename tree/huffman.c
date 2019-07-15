@@ -6,10 +6,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef struct TNode *HuffmanTree;
+
+struct TNode{
+    int weight;
+    HuffmanTree Left;
+    HuffmanTree Right;
+};
 
 
 #define		MaxSize		1001
-typedef int ElemType;
+typedef struct TNode ElemType;
 
 typedef struct HNODE *Heap;
 struct HNODE {
@@ -38,13 +45,6 @@ ElemType DeleteMin(MinHeap H);
 
 
 //////////////////////////////////////////////////
-typedef struct TNode *HuffmanTree;
-
-struct TNode{
-    int weight;
-    HuffmanTree Left;
-    HuffmanTree Right;
-};
 
 HuffmanTree Huffman(MinHeap H);
 //void PreorderTraversal( HuffmanTree BT ); 
@@ -62,6 +62,7 @@ int main()
     int M, i;
     char *pText;
     int *pHz;
+    ElemType *pelem;
 
     scanf("%d\n", &M);
     pText = (char*)malloc(sizeof(char)*M);
@@ -75,8 +76,11 @@ int main()
             scanf("%d", pHz+i);
         else
             scanf("%d ", pHz+i);
-
-       Insert(H, *(pHz+i));
+        pelem = malloc(sizeof(ElemType));
+        pelem->weight = *(pHz+i);
+        pelem->Left = NULL;
+        pelem->Right = NULL;
+        Insert(H, *pelem);
     }
     DisplayHeap(H);
 
@@ -124,17 +128,18 @@ int main()
 HuffmanTree Huffman(MinHeap H)
 {
     int i; 
-    HuffmanTree T;
+    ElemType weight;
+    HuffmanTree T, HuffManNode;
 
     for (i = 1; i < H->Size; i ++)
     {
         T = malloc(sizeof(struct TNode));
-        T->Left = DeleteMin(H);
-        T->Right = DeleteMin(H);
+        T->Left = &DeleteMin(H);   
+        T->Right = &DeleteMin(H);
         T->weight = T->Left->weight+T->Right->weight;
         Insert(H, T);
     }
-    T = DeleteMin(H);
+    T = &DeleteMin(H);
     return T;
 }
 
@@ -263,7 +268,7 @@ MaxHeap CreateHeap(int maxsize)
     H->Data = (ElemType*)malloc((maxsize+1)*sizeof(ElemType));
     H->Size = 0;
     H->Capacity = maxsize;
-    H->Data[0] = MINDATA;
+   // H->Data[0] = MINDATA;
 
     return H;
 }
@@ -273,7 +278,7 @@ void DisplayHeap(MinHeap H)
 {
     int i;
     for (i = 1; i <= H->Size; i ++)
-        printf("%d ", *(H->Data+i));
+        printf("%d ", ((ElemType*)(H->Data+i))->weight);
     printf("\n");
 }
 
@@ -285,7 +290,7 @@ int Insert(MinHeap H, ElemType X)
         return 0;
     }
     i = ++H->Size;
-    for(; H->Data[i/2] > X; i/=2)
+    for(; H->Data[i/2].weight > X.weight; i/=2)
         H->Data[i] = H->Data[i/2];
     H->Data[i] = X;
     return 1;
@@ -307,17 +312,17 @@ ElemType DeleteMin(MinHeap H)
 
     ElemType MinItem, X;
 
-    if (IsEmpty(H)) {
-        return -1;
-    }
+ //   if (IsEmpty(H)) {
+ //       return ;
+//    }
     MinItem = H->Data[1];
     X = H->Data[H->Size--];
     for (Parent = 1; Parent*2 <= H->Size; Parent = Child)
     {
         Child = 2*Parent;
-        if((Child != H->Size)&&(H->Data[Child] > H->Data[Child+1]))
+        if((Child != H->Size)&&(H->Data[Child].weight > H->Data[Child+1].weight))
             Child ++;
-        if (X <= H->Data[Child])
+        if (X.weight <= H->Data[Child].weight)
             break;
         else
             H->Data[Parent] = H->Data[Child];
