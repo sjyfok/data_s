@@ -37,8 +37,9 @@ void DisplayHeap(MinHeap H);
 void PrintPath(MinHeap H, int start);
 void FreeHeap(MinHeap H);
 int IsFull(MinHeap H);
+int IsEmpty(MinHeap H);
 int Insert(MinHeap H, ElemType X);
-ElemType DeleteMin(MinHeap H);
+ElemType* DeleteMin(MinHeap H);
 
 
 
@@ -47,7 +48,7 @@ ElemType DeleteMin(MinHeap H);
 //////////////////////////////////////////////////
 
 HuffmanTree Huffman(MinHeap H);
-//void PreorderTraversal( HuffmanTree BT ); 
+void PreorderTraversal( HuffmanTree BT ); 
 //void InorderTraversal( HuffManTree BT );  
 
 //BinTree Insert( BinTree BST, ElementType X );
@@ -63,6 +64,7 @@ int main()
     char *pText;
     int *pHz;
     ElemType *pelem;
+    HuffmanTree T;
 
     scanf("%d\n", &M);
     pText = (char*)malloc(sizeof(char)*M);
@@ -83,10 +85,11 @@ int main()
         Insert(H, *pelem);
     }
     DisplayHeap(H);
-
+    T = Huffman(H);
+    PreorderTraversal(T); 
     free(pHz);
     free(pText);
-
+    FreeHeap(H);
     
   /*  BinTree BST, MinP, MaxP, Tmp;
     ElementType X;
@@ -128,31 +131,38 @@ int main()
 HuffmanTree Huffman(MinHeap H)
 {
     int i; 
-    ElemType weight;
-    HuffmanTree T, HuffManNode;
+    HuffmanTree T;
 
-    for (i = 1; i < H->Size; i ++)
-    {
+
+//    for (i = 1; i < H->Size; i ++)
+//    {
+    while(!IsEmpty(H)) {
         T = malloc(sizeof(struct TNode));
-        T->Left = &DeleteMin(H);   
-        T->Right = &DeleteMin(H);
+        T->Left = DeleteMin(H);   
+        DisplayHeap(H);
+        T->Right = DeleteMin(H);
+        DisplayHeap(H);
         T->weight = T->Left->weight+T->Right->weight;
-        Insert(H, T);
+        printf("weight = %d\n", T->weight);
+        Insert(H, *T);
+        DisplayHeap(H);
     }
-    T = &DeleteMin(H);
+    T = DeleteMin(H);
+    DisplayHeap(H);
     return T;
 }
 
 //先序遍历树
-/*void PreorderTraversal(BinTree BT)
+void PreorderTraversal(HuffmanTree BT)
 {
 	if (BT != NULL)
 	{
-		printf("%d ", BT->Data);
+		printf("%d ", BT->weight);
 		PreorderTraversal(BT->Left);
 		PreorderTraversal(BT->Right);
 	}
 }
+/*
 //中序遍历树
 void InorderTraversal( BinTree BT )
 {
@@ -296,26 +306,35 @@ int Insert(MinHeap H, ElemType X)
     return 1;
 }
 
+void FreeHeap(MinHeap H)
+{
+    free(H->Data);
+    free(H);
+}
+
 int IsFull(MinHeap H)
 {
     return (H->Size == H->Capacity);
 }
 
+
 int IsEmpty(MinHeap H)
 {
+    
     return (H->Size == 0);
 }
 
-ElemType DeleteMin(MinHeap H)
+ElemType* DeleteMin(MinHeap H)
 {
     int Parent, Child;
 
-    ElemType MinItem, X;
+    ElemType  X;
+    ElemType *pMinItem = malloc(sizeof(ElemType));
 
  //   if (IsEmpty(H)) {
  //       return ;
 //    }
-    MinItem = H->Data[1];
+    *pMinItem = H->Data[1];
     X = H->Data[H->Size--];
     for (Parent = 1; Parent*2 <= H->Size; Parent = Child)
     {
@@ -328,4 +347,5 @@ ElemType DeleteMin(MinHeap H)
             H->Data[Parent] = H->Data[Child];
     }
     H->Data[Parent] = X;
+    return pMinItem;
 }
