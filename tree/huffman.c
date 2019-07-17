@@ -123,9 +123,11 @@ int main()
         scanf("%d", &X);
         BST = Delete(BST, X);
     }
-    printf("Inorder:"); InorderTraversal(BST); printf("\n");
+    printf("Inorder:"); InorderTraversal(BST); printf("\n");*/
 
-    return 0;*/
+
+	fflush(stdout);
+    return 0;
 }
 
 HuffmanTree Huffman(MinHeap H)
@@ -133,9 +135,6 @@ HuffmanTree Huffman(MinHeap H)
     int i; 
     HuffmanTree T;
 
-
-//    for (i = 1; i < H->Size; i ++)
-//    {
     while(!IsEmpty(H)) {
         T = malloc(sizeof(struct TNode));
         T->Left = DeleteMin(H);   
@@ -144,10 +143,11 @@ HuffmanTree Huffman(MinHeap H)
         DisplayHeap(H);
         T->weight = T->Left->weight+T->Right->weight;
         printf("weight = %d\n", T->weight);
-        Insert(H, *T);
+		if (!IsEmpty(H))  //当堆空的时候 就完成堆的创建
+			Insert(H, *T);
         DisplayHeap(H);
     }
-    T = DeleteMin(H);
+  //  T = DeleteMin(H);
     DisplayHeap(H);
     return T;
 }
@@ -155,6 +155,7 @@ HuffmanTree Huffman(MinHeap H)
 //先序遍历树
 void PreorderTraversal(HuffmanTree BT)
 {
+
 	if (BT != NULL)
 	{
 		printf("%d ", BT->weight);
