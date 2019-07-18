@@ -70,18 +70,21 @@ int main()
     ElemType *pelem;
     HuffmanTree T;
 
-    scanf("%d\n", &N);
+	cin >> N;
     pText = (char*)malloc(sizeof(char)*N);
     pHz = (int*)malloc(sizeof(int)*N);
     
     H = CreateHeap(N);
 	for (i = 0; i < N; i ++)
     {
-        scanf("%c ", pText+i);
-        if (i == (N-1))
-            scanf("%d", pHz+i);
-        else
-            scanf("%d ", pHz+i);
+      
+		cin >> *(pText + i);
+		if (i == (N - 1))
+			//scanf("%d", pHz+i);
+			cin >> *(pHz + i);
+		else
+			//scanf("%d ", pHz+i);
+			cin >> *(pHz + i);
         pelem = (ElemType*)malloc(sizeof(ElemType));
         pelem->weight = *(pHz+i);
 		pelem->swap = 0;
@@ -91,7 +94,7 @@ int main()
     }
    // DisplayHeap(H);
     T = Huffman(H);
-    //PreorderTraversal(T); 
+    PreorderTraversal(T); 
 
 	Judge(T, pHz, N);
 
@@ -103,38 +106,47 @@ int main()
     return 0;
 }
 
-int JudgeDo(char ch, char *str, HuffmanTree T, int hz)
+static char  answer[MaxSize];
+
+int JudgeDo(char ch,  HuffmanTree T, int hz)
 {
-	int len = strlen(str);
 	int i;
 	HuffmanTree RT1, RT2, tempT;
+	int len = strlen(answer);
+	
 	RT2 = RT1 = T;
 	for (i = 0; i < len; i++)
 	{
-		if (str[i] == '0')
+		if (answer[i] == '0')
 		{
 			if (RT2->Left)
 			{
 				RT1 = RT2;
-				RT2 = RT2->Left;
+				RT2 = RT2->Left;		
 			}
 			else
 			{
-				if (RT1->Right->Left && RT1->swap == 0)
+				if (RT1->swap == 0)
 				{
 					tempT = RT1->Left;
 					RT1->Left = RT1->Right;
 					RT1->Right = tempT;
-					RT2 = RT1->Left;
+					if (RT2 == RT1->Left)
+						RT2 = RT1->Right;
+					else RT2 = RT1->Left;
 					RT1->swap = 1;
 				}
-				else
-					return 0;
-				RT1 = RT2;
-				RT2 = RT2->Left;
+				else return 0;
+				if (RT2->Left)
+				{
+					RT1 = RT2;
+					RT2 = RT2->Left;
+				}
+				else return 0;
+				
 			}
 		}
-		else if (str[i] == '1')
+		else if (answer[i] == '1')
 		{
 			if (RT2->Right)
 			{
@@ -143,18 +155,23 @@ int JudgeDo(char ch, char *str, HuffmanTree T, int hz)
 			}
 			else
 			{
-				if (RT1->Left->Right && RT1->swap == 0)
+				if (RT1->swap == 0)
 				{
 					tempT = RT1->Left;
 					RT1->Left = RT1->Right;
 					RT1->Right = tempT;
-					RT2 = RT1->Right;
+					if (RT2 == RT1->Left)
+						RT2 = RT1->Right;
+					else RT2 = RT1->Left;
 					RT1->swap = 1;
 				}
-				else
-					return 0;
-				RT1 = RT2;
-				RT2 = RT2->Right;
+				else return 0;
+				if (RT2->Right)
+				{
+					RT1 = RT2;
+					RT2 = RT2->Right;
+				}
+				else return 0;
 			}
 		}
 	}
@@ -165,7 +182,7 @@ int JudgeDo(char ch, char *str, HuffmanTree T, int hz)
 	return 0;
 }
 
-static char  answer[MaxSize];
+
 
 void Judge(HuffmanTree T, int hz[], int N)
 {
@@ -184,7 +201,7 @@ void Judge(HuffmanTree T, int hz[], int N)
 			cin >> szCh >> answer;
 		//	getchar();
 			
-			if (JudgeDo(szCh, answer, T, hz[j]) == 0) {
+			if (JudgeDo(szCh, T, hz[j]) == 0) {
 				printf("no\n");
 				break;
 			}
@@ -224,7 +241,7 @@ void PreorderTraversal(HuffmanTree BT)
 
 	if (BT != NULL)
 	{
-	//	printf("%d ", BT->weight);
+		printf("%d ", BT->weight);
 		BT->swap = 0;
 		PreorderTraversal(BT->Left);
 		PreorderTraversal(BT->Right);
