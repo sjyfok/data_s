@@ -120,7 +120,7 @@ int JudgeDo(char ch, char *str, HuffmanTree T, int hz)
 			}
 			else
 			{
-				if (RT1->Right->Left && RT1->swap == 0)
+				if (RT1->Right && RT1->swap == 0)
 				{
 					tempT = RT1->Left;
 					RT1->Left = RT1->Right;
@@ -224,7 +224,7 @@ void PreorderTraversal(HuffmanTree BT)
 
 	if (BT != NULL)
 	{
-	//	printf("%d ", BT->weight);
+		printf("%d ", BT->weight);
 		BT->swap = 0;
 		PreorderTraversal(BT->Left);
 		PreorderTraversal(BT->Right);
