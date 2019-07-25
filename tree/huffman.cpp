@@ -1,443 +1,307 @@
-/*
-
-*/
-//#include <stdio.h>
-//#include <stdlib.h>
-
-#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 
-using namespace std;
-typedef struct TNode *HuffmanTree;
+#define MAXN 64
+#define Yes 1
+#define No  0
 
-struct TNode{
-    int weight;
-	int swap;
-    HuffmanTree Left;
-    HuffmanTree Right;
+typedef struct TreeNode *HuffmanTree;
+struct TreeNode {
+    int Weight;
+    HuffmanTree Left, Right;
 };
 
-
-#define		MaxSize		1001
-typedef struct TNode ElemType;
-
-typedef struct HNODE *Heap;
-struct HNODE {
-	ElemType *Data;
-	int Size;
-	int Capacity;
+/* MinHeap function */
+#define MinData -1
+typedef struct HeapStruct *MinHeap;
+struct HeapStruct{
+    HuffmanTree Data;
+    int Size;
+    int Capacity;
 };
 
-#define  MINDATA 0
+#define QueueSize 100
+struct QNode {
+    HuffmanTree Data[QueueSize];
+    int rear;
+    int front;
+};
+typedef struct QNode *Queue;
 
-typedef Heap    MaxHeap;
-typedef Heap    MinHeap;
-
-
-MaxHeap CreateHeap(int maxsize);
-void BuildHeap(MinHeap H);
-void DisplayHeap(MinHeap H);
-void PrintPath(MinHeap H, int start);
-void FreeHeap(MinHeap H);
-int IsFull(MinHeap H);
+MinHeap CreateMinHeap(int MaxSize);
+int MinHeapIsFull(MinHeap H);
+void MinHeapInsert(MinHeap H, HuffmanTree item);
 int IsEmpty(MinHeap H);
-int Insert(MinHeap H, ElemType X);
-ElemType* DeleteMin(MinHeap H);
-
-
-
-
-
-//////////////////////////////////////////////////
-
+HuffmanTree DeleteMin(MinHeap H);
+void PrecDown(MinHeap H, int p);
+void BuildMinHeap(MinHeap H);
+void PrintMinHeap(MinHeap H);
 HuffmanTree Huffman(MinHeap H);
-void PreorderTraversal( HuffmanTree BT ); 
-void Judge(HuffmanTree T, int hz[], int N);
-//void InorderTraversal( HuffManTree BT );  
+MinHeap ReadData(int num, char *ch, int *cf, MinHeap H);
 
-//BinTree Insert( BinTree BST, ElementType X );
-//BinTree Delete( BinTree BST, ElementType X );
-//Position Find( BinTree BST, ElementType X );
-//Position FindMin( BinTree BST );
-//Position FindMax( BinTree BST );
+void AddQ(Queue PtrQ, HuffmanTree item);
+HuffmanTree DeleteQ(Queue PtrQ);
+int IsEmptyQ(Queue PtrQ);
+void LevelOrderTraversal(HuffmanTree HT);
 
-int main()
+MinHeap CreateMinHeap(int MaxSize)
 {
-    MinHeap H;
-    int N, i;
-    char *pText;
-    int *pHz;
-    ElemType *pelem;
-    HuffmanTree T;
+    MinHeap H = (MinHeap)malloc(sizeof(struct HeapStruct));
+    H->Data = (HuffmanTree)malloc(sizeof(struct TreeNode)*(MaxSize+1));
+    H->Size = 0;
+    H->Capacity = MaxSize;
+    H->Data[0].Weight = MinData;    //哨兵
+    return H;
+}
 
-	cin >> N;
-    pText = (char*)malloc(sizeof(char)*N);
-    pHz = (int*)malloc(sizeof(int)*N);
-    
-    H = CreateHeap(N);
-	for (i = 0; i < N; i ++)
-    {
-      
-		cin >> *(pText + i);
-		if (i == (N - 1))
-			//scanf("%d", pHz+i);
-			cin >> *(pHz + i);
-		else
-			//scanf("%d ", pHz+i);
-			cin >> *(pHz + i);
-        pelem = (ElemType*)malloc(sizeof(ElemType));
-        pelem->weight = *(pHz+i);
-		pelem->swap = 0;
-        pelem->Left = NULL;
-        pelem->Right = NULL;
-        Insert(H, *pelem);
+int MinHeapIsFull(MinHeap H)
+{
+    return (H->Size == H->Capacity);
+}
+
+void MinHeapInsert(MinHeap H, HuffmanTree item)
+{
+    int i;
+    if(MinHeapIsFull(H)) {
+        printf("Heap full");
+        return;
     }
-   // DisplayHeap(H);
-    T = Huffman(H);
-    PreorderTraversal(T); 
+    i = ++H->Size;
+    for(;H->Data[i/2].Weight>item->Weight;i=i/2) {
+        H->Data[i].Weight = H->Data[i/2].Weight;
+        H->Data[i].Left = H->Data[i/2].Left;
+        H->Data[i].Right = H->Data[i/2].Right;
+    }
+    H->Data[i] = *item;
+    // free(item);
+}
 
-	Judge(T, pHz, N);
+int IsEmpty(MinHeap H)
+{
+    return (H->Size == 0);
+}
 
-    free(pHz);
-    free(pText);
-    FreeHeap(H);
+HuffmanTree DeleteMin(MinHeap H)
+{
+    int Parent, Child;
+    HuffmanTree MinItem, temp;
     
-  	fflush(stdout);
-    return 0;
+    MinItem = (HuffmanTree)malloc(sizeof(struct TreeNode));
+    temp = (HuffmanTree)malloc(sizeof(struct TreeNode));
+
+    if(IsEmpty(H)) {
+        printf("MinHeap Empty");
+        return NULL;
+    }
+
+    *MinItem = H->Data[1];      //保存最小的元素
+    *temp = H->Data[H->Size--]; //从最后一个元素插到顶点来比较
+// printf("Size:%d\n", H->Size);
+    for(Parent=1;Parent*2<=H->Size;Parent=Child) {  //有没有左儿子
+        Child = Parent*2;       //有的话比较左儿子
+        if((Child!=H->Size)&&(H->Data[Child].Weight>H->Data[Child+1].Weight))   //比较左右儿子那个小
+            Child++;
+        if(temp->Weight <= H->Data[Child].Weight) break;
+        else {
+            H->Data[Parent].Weight = H->Data[Child].Weight;
+            H->Data[Parent].Left = H->Data[Child].Left;
+            H->Data[Parent].Right = H->Data[Child].Right;
+        }
+    }
+    H->Data[Parent] = *temp;
+    // free(temp);
+    return MinItem;
 }
 
-static char  answer[MaxSize];
-
-int JudgeDo(char ch,  HuffmanTree T, int hz)
+void PrecDown(MinHeap H, int p)
 {
-	int i;
-	HuffmanTree RT1, RT2, tempT;
-	int len = strlen(answer);
-	
-	RT2 = RT1 = T;
-	for (i = 0; i < len; i++)
-	{
-		if (answer[i] == '0')
-		{
-			if (RT2->Left)
-			{
-				RT1 = RT2;
-				RT2 = RT2->Left;		
-			}
-			else
-			{
-<<<<<<< HEAD
-				if (RT1->Right && RT1->swap == 0)
-=======
-				if (RT1->swap == 0)
->>>>>>> 7d27296f85e1c6f70d3f4bdf2d942c5ee164fe5d
-				{
-					tempT = RT1->Left;
-					RT1->Left = RT1->Right;
-					RT1->Right = tempT;
-					if (RT2 == RT1->Left)
-						RT2 = RT1->Right;
-					else RT2 = RT1->Left;
-					RT1->swap = 1;
-				}
-				else return 0;
-				if (RT2->Left)
-				{
-					RT1 = RT2;
-					RT2 = RT2->Left;
-				}
-				else return 0;
-				
-			}
-		}
-		else if (answer[i] == '1')
-		{
-			if (RT2->Right)
-			{
-				RT1 = RT2;
-				RT2 = RT2->Right;
-			}
-			else
-			{
-				if (RT1->swap == 0)
-				{
-					tempT = RT1->Left;
-					RT1->Left = RT1->Right;
-					RT1->Right = tempT;
-					if (RT2 == RT1->Left)
-						RT2 = RT1->Right;
-					else RT2 = RT1->Left;
-					RT1->swap = 1;
-				}
-				else return 0;
-				if (RT2->Right)
-				{
-					RT1 = RT2;
-					RT2 = RT2->Right;
-				}
-				else return 0;
-			}
-		}
-	}
-	if (RT2->Left || RT2->Right)
-		return 0;
-	if (RT2->weight == hz)
-		return 1;
-	return 0;
+    int Parent, Child;
+    HuffmanTree temp;
+
+    temp = (HuffmanTree)malloc(sizeof(struct TreeNode));
+
+    *temp = H->Data[p];         /* 取出根结点存放的值 */
+    for(Parent=p;Parent*2<=H->Size;Parent=Child) {  //有没有左儿子
+        Child = Parent*2;       //有的话比较左儿子
+        if((Child!=H->Size)&&(H->Data[Child].Weight>H->Data[Child+1].Weight)) //比较左右儿子那个小
+            Child++;
+        if(temp->Weight <= H->Data[Child].Weight) break;
+        else
+            H->Data[Parent].Weight = H->Data[Child].Weight;
+    }
+    H->Data[Parent] = *temp;
 }
 
-
-
-void Judge(HuffmanTree T, int hz[], int N)
+void BuildMinHeap(MinHeap H)
 {
-	int i, M, j;
-	char szCh;
-	
-	rewind(stdin);
-	cin >> M;
-	//scanf("%d", &M);
-	getchar();
-	for (i = 0; i < M; i++)
-	{
-		for (j = 0; j < N; j++)
-		{
-			//scanf("%s %s\n", &szCh, answer);
-			cin >> szCh >> answer;
-		//	getchar();
-			
-			if (JudgeDo(szCh, T, hz[j]) == 0) {
-				printf("no\n");
-				break;
-			}
-		}
-		if (j >= N)
-			printf("yes\n");
-		PreorderTraversal(T);
-	}
+    int i;
+    /* 从最后一个结点的父结点开始，到根结点1 */
+    for(i=H->Size/2;i>0;i--)
+        PrecDown(H, i);
+}
+
+void PrintMinHeap(MinHeap H)
+{
+    int i;
+// printf("MinHeap: ");
+    for(i=1;i<=H->Size;i++) {
+        printf(" %d", H->Data[i].Weight);
+    }
+    printf("\n");
 }
 
 HuffmanTree Huffman(MinHeap H)
 {
-    int i; 
+    /* 假设H->Size个权值已经存在H->Elements[]->Weight里 */
+    int i;
     HuffmanTree T;
-
-    while(!IsEmpty(H)) {
-        T = (TNode*)malloc(sizeof(struct TNode));
-        T->Left = DeleteMin(H);   
-    //    DisplayHeap(H);
-        T->Right = DeleteMin(H);
-     //   DisplayHeap(H);
-        T->weight = T->Left->weight+T->Right->weight;
-		T->swap = 0;
-     //   printf("weight = %d\n", T->weight);
-		if (!IsEmpty(H))  //当堆空的时候 就完成堆的创建
-			Insert(H, *T);
-     //   DisplayHeap(H);
+    BuildMinHeap(H);        /* 将H->Elemnts[]按权值调整为最小堆 */
+// PrintMinHeap(H);
+    for(i=1;i<H->Size;) {
+        T = (HuffmanTree)malloc(sizeof(struct TreeNode));   /* 建立新结点 */
+        T->Left = DeleteMin(H);         /* 从最小堆中删除一个结点，作为新T的左子结点 */
+        T->Right = DeleteMin(H);        /* 从最小堆中删除一个结点，作为新T的右子结点 */
+        T->Weight = T->Left->Weight+T->Right->Weight;   /* 计算新权值 */
+        MinHeapInsert(H, T);
+// PrintMinHeap(H);
+// printf("Huffman:");
+// LevelOrderTraversal(T);
+// printf("\n");
     }
-  //  T = DeleteMin(H);
-  //  DisplayHeap(H);
+    T = DeleteMin(H);
     return T;
 }
 
-//先序遍历树
-void PreorderTraversal(HuffmanTree BT)
+void PrintHuffman(HuffmanTree HT)
 {
-
-	if (BT != NULL)
-	{
-		printf("%d ", BT->weight);
-		BT->swap = 0;
-		PreorderTraversal(BT->Left);
-		PreorderTraversal(BT->Right);
-	}
+    if(HT) {
+        PrintHuffman(HT->Left);
+        PrintHuffman(HT->Right);
+        printf("%d ", HT->Weight);
+    }
 }
 
-
-MaxHeap CreateHeap(int maxsize)
+MinHeap ReadData(int num, char *ch, int *cf, MinHeap H)
 {
-	MinHeap H = (MinHeap)malloc(sizeof(struct HNODE));
-
-	H->Data = (ElemType*)malloc((maxsize + 1) * sizeof(ElemType));
-	H->Size = 0;
-	H->Capacity = maxsize;
-	// H->Data[0] = MINDATA;
-
-	return H;
+    int i;
+    for(i=0;i<num;i++) {
+        if(i==num-1)
+            scanf("%c %d", &ch[i], &cf[i]);
+        else
+            scanf("%c %d ", &ch[i], &cf[i]);
+        HuffmanTree T = (HuffmanTree)malloc(sizeof(struct TreeNode));
+        T->Weight = cf[i];
+        MinHeapInsert(H, T);
+    }
+    return H;
 }
 
-
-void DisplayHeap(MinHeap H)
+int WPL(HuffmanTree T, int Depth)
 {
-	int i;
-	for (i = 1; i <= H->Size; i++)
-		printf("%d ", ((ElemType*)(H->Data + i))->weight);
-	printf("\n");
+// printf("T->Weight = %d, T->Left = %p, T->Right =%p\n", 
+    // T->Weight, T->Left, T->Right);
+    int rw=0, lw=0;
+    if(!T->Left && !T->Right)
+        return (Depth*(T->Weight));
+    else {
+        if(T->Left) lw = WPL(T->Left, Depth+1);
+        if(T->Right) rw = WPL(T->Right, Depth+1);
+        return lw+rw;
+    }
 }
 
-int Insert(MinHeap H, ElemType X)
+HuffmanTree CreateHuffmanTree()
 {
-	int i;
-	if (IsFull(H))
-	{
-		return 0;
-	}
-	i = ++H->Size;
-	for (; H->Data[i / 2].weight > X.weight; i /= 2)
-		H->Data[i] = H->Data[i / 2];
-	H->Data[i] = X;
-	return 1;
+    HuffmanTree T = (HuffmanTree)malloc(sizeof(struct TreeNode));
+    T->Weight = 0;
+    T->Left = T->Right = NULL;
+    return T;
 }
 
-void FreeHeap(MinHeap H)
+void DeleteHuffmanTree(HuffmanTree T)
 {
-	free(H->Data);
-	free(H);
+    if(T) {
+        DeleteHuffmanTree(T->Left);
+        DeleteHuffmanTree(T->Right);
+        free(T);
+    }
 }
 
-int IsFull(MinHeap H)
+int Judge(int N, int CodeLen, char *ch, int *cf)
 {
-	return (H->Size == H->Capacity);
-}
-
-
-int IsEmpty(MinHeap H)
-{
-
-	return (H->Size == 0);
-}
-
-ElemType* DeleteMin(MinHeap H)
-{
-	int Parent, Child;
-
-	ElemType  X;
-	ElemType *pMinItem = (ElemType*)malloc(sizeof(ElemType));
-
-	//   if (IsEmpty(H)) {
-	//       return ;
-	//    }
-	*pMinItem = H->Data[1];
-	X = H->Data[H->Size--];
-	for (Parent = 1; Parent * 2 <= H->Size; Parent = Child)
-	{
-		Child = 2 * Parent;
-		if ((Child != H->Size) && (H->Data[Child].weight > H->Data[Child + 1].weight))
-			Child++;
-		if (X.weight <= H->Data[Child].weight)
-			break;
-		else
-			H->Data[Parent] = H->Data[Child];
-	}
-	H->Data[Parent] = X;
-	return pMinItem;
-}
-
-/*
-//中序遍历树
-void InorderTraversal( BinTree BT )
-{
-	if (BT != NULL)
-	{
-		InorderTraversal(BT->Left);
-		printf("%d ", BT->Data);
-		InorderTraversal(BT->Right);
-	}
-
-}
-
-BinTree Insert( BinTree BST, ElementType X )
-{
-	if (!BST)
-	{
-		BST = (BinTree)malloc(sizeof(struct TNode));
-		BST->Data = X;
-		BST->Left = BST->Right = NULL;
-	}
-	else if (X < BST->Data) {
-		BST->Left = Insert(BST->Left, X);
-	} else {
-		BST->Right = Insert(BST->Right, X);
-	}
-	return BST;
-}
-
-Position FindMin( BinTree BST )
-{
-	if (BST != NULL)
-	{
-		while (BST->Left != NULL)
-		{
-			BST = BST->Left;
+    char s1[MAXN], s2[MAXN];
+    int i, j, weight, flag = Yes;
+    HuffmanTree T = CreateHuffmanTree();
+    HuffmanTree pt = NULL;
+    for(i=0;i<N;i++) {
+        scanf("%s %s\n", s1, s2);
+        if(strlen(s2) > N) 
+		{ 
+			flag = No; 
+			break; 
 		}
-	}
-	return BST;
+        for(j=0;s1[0]!=ch[j];j++)
+            if(j==N)  { flag = No; break; }
+        weight = cf[j];
+        pt = T;
+        for(j=0;j<strlen(s2);j++) {
+            if(s2[j] == '0') {                      //开始创建树
+                if(!pt->Left) pt->Left = CreateHuffmanTree();   //没有就创建
+                else if(pt->Left->Weight != 0) {
+                    // printf("Exit from pt->Left->Weight == 1\n");
+                    flag = No;        //是否路过叶子
+                } 
+                pt = pt->Left;
+            } else if(s2[j] == '1') {
+                if(!pt->Right) pt->Right = CreateHuffmanTree();
+                else if(pt->Right->Weight != 0) {
+                    // printf("Exit from pt->Right->Weight == 1\n");
+                    flag = No;
+                }
+                pt = pt->Right;
+            } else {                                //应该不会发生
+                // printf("Exit from not happen\n");
+                flag = No;
+            }
+        }
+        pt->Weight = weight;                        //叶子标记
+        weight = 0;                                 //清空weight
+        if(pt->Left || pt->Right) {
+            // printf("Exit from pt->Left || pt->Right\n");
+            flag = No;     //不是叶子也错
+        }
+    }
+    if(flag != No && CodeLen == WPL(T, 0)) {
+        return Yes;
+    } else {
+        // printf("Exit from CodeLen != WPL(T, 0) %d\n", WPL(T, 0));
+        if(T) DeleteHuffmanTree(T);
+        return No;
+    }
 }
 
-Position FindMax( BinTree BST )
+int main()
 {
-	if (BST != NULL)
-	{
-		while (BST->Right != NULL) 
-		{
-			BST = BST->Right;
-		}
-	}
-	return BST;
+    int N, CodeLen, n, i;          //huffman的叶子结点个数,WPL最优值
+    MinHeap H;      //最小堆
+    char *ch;       //输入的字符组
+    int *cf;
+    HuffmanTree T;  //HuffmanTree
+    scanf("%d\n", &N);
+    H = CreateMinHeap(N);
+    ch = (char *)malloc(sizeof(char)*N);
+    cf = (int *)malloc(sizeof(int)*N);
+    H = ReadData(N, ch, cf, H);
+    T = Huffman(H);
+    CodeLen = WPL(T, 0);
+    scanf("%d\n", &n);
+    for(i=0;i<n;i++) {
+        if(Judge(N, CodeLen, ch, cf))
+            printf("Yes\n");
+        else
+            printf("No\n");
+    }
+    return 0;
 }
-
-Position Find( BinTree BST, ElementType X )
-{
-	if (BST == NULL)
-		return NULL;
-	if (BST->Data < X) //在右子树中找
-	{
-		return Find(BST->Right, X);
-	}
-	else if (BST->Data > X)
-	{
-		return Find(BST->Left, X);
-	}
-	else
-		return BST;
-}
-
-BinTree Delete( BinTree BST, ElementType X )
-{
-	if (BST == NULL) //没有找到
-	{
-		printf("Not Found\n");
-		return NULL;
-	}
-	if (BST->Data < X)
-	{
-		BST->Right =  Delete(BST->Right, X);
-	}
-	else if (BST->Data > X)
-	{
-		BST->Left =  Delete(BST->Left, X);
-	}
-	else 
-	{
-		Position Tmp;
-		if (BST->Left && BST->Right) //有左右孩子
-		{
-			Tmp = FindMin(BST->Right);
-			BST->Data = Tmp->Data;
-			BST->Right = Delete(BST->Right, BST->Data);
-		}
-		else
-		{
-			Tmp = BST;
-			if (BST->Left == NULL)
-				BST = BST->Right;
-			else if (BST->Right == NULL)
-				BST = BST->Left;
-			free(Tmp);
-		}
-	}
-	
-	return BST;
-}
-*/
-
-

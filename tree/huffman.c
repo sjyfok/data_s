@@ -7,11 +7,12 @@
 #include <stdlib.h>
 
 typedef struct TNode *HuffmanTree;
+typedef struct TNode *Tree;
 
 struct TNode{
     int weight;
-    HuffmanTree Left;
-    HuffmanTree Right;
+	struct TNode* Left;
+    struct TNode* Right;
 };
 
 
@@ -32,9 +33,7 @@ typedef Heap    MinHeap;
 
 
 MaxHeap CreateHeap(int maxsize);
-void BuildHeap(MinHeap H);
 void DisplayHeap(MinHeap H);
-void PrintPath(MinHeap H, int start);
 void FreeHeap(MinHeap H);
 int IsFull(MinHeap H);
 int IsEmpty(MinHeap H);
@@ -50,8 +49,10 @@ ElemType* DeleteMin(MinHeap H);
 HuffmanTree Huffman(MinHeap H);
 void PreorderTraversal( HuffmanTree BT ); 
 int WPL(HuffmanTree HT, int depth);
-
-int Judge(int aCnt, int hCode, int hz[]);
+int Judge(int aCnt, int hCode, char text[], int hz[]);
+Tree BuildTree();
+void DestroyTree(Tree T);
+int JudgeTree(Tree T, int Hz);
 
 int main()
 {
@@ -83,14 +84,14 @@ int main()
     }
  //   DisplayHeap(H);
     T = Huffman(H);
-    PreorderTraversal(T); 
+  //  PreorderTraversal(T); 
 	fflush(stdout);
 	huffmanCodeLen = WPL(T, 0);
 //	printf("codelen = %d\n", huffmanCodeLen);
 	scanf("%d", &M);
 	while (M --)
 	{
-		if (Judge(N, huffmanCodeLen, pHz))printf("Yes\n");
+		if (Judge(N, huffmanCodeLen, pText, pHz))printf("Yes\n");
 		else printf("No\n");
 	}
 	
@@ -104,24 +105,186 @@ int main()
 
 char answer[MaxSize];
 
-int Judge(int aCnt, int hCode, int hz[])
+Tree BuildTree()
 {
-	int i, len, wpl = 0;
-	char s1[2];
-	for (i = 0; i < aCnt; i++)
+	Tree elem = malloc(sizeof(struct TNode));
+	elem->weight = 0;
+	elem->Right = elem->Left = NULL;
+
+	return elem;
+}
+
+int JudgeTree(Tree T, int Hz)
+{
+	int len = strlen(answer);
+	int i;
+	Tree CurT = T;
+
+	for (i = 0; i < len; i++)
 	{
-		scanf("%s%s", s1, answer);
-		len = strlen(answer);
-		wpl += hz[i] * len;
+		if (answer[i] == '1')
+		{
+			if (CurT->Right == NULL)
+			{
+				Tree TempT = malloc(sizeof(struct TNode));
+				TempT->Left = TempT->Right = NULL;
+				TempT->weight = 0;
+				CurT->Right = TempT;
+			}
+			else if (CurT->Right->weight != 0)
+			{
+				return 0;
+			}
+			CurT = CurT->Right;
+		}
+		if (answer[i] == '0')
+		{
+			if (CurT->Left == NULL)
+			{
+				Tree TempT = malloc(sizeof(struct TNode));
+				TempT->Left = TempT->Right = NULL;
+				TempT->weight = 0;
+				CurT->Left = TempT;
+			}
+			else if (CurT->Left->weight != 0)
+			{
+				return 0;
+			}
+			CurT = CurT->Left;
+		}
+	}
+	
+	////有误
+	//if (CurT->weight != 0)
+	//{
+	//	return 0;
+	//}
+	if (CurT->Left == NULL && CurT->Right == NULL)
+	{
+		CurT->weight = Hz;
+		return 1;
+	}
+	else
+		return 0;
+	
+//	return 1;
+}
+
+
+
+void DestroyTree(Tree T)
+{
+
+	if (T != NULL)
+	{
+		//		printf("%d ", BT->weight);
+		DestroyTree(T->Left);
+		DestroyTree(T->Right);
+		free(T);
 	}
 
+	//if (T->Left == NULL && T->Right  == NULL)
+	//{
+	//	free(T);
+	//}
+	//DestroyTree(T->Left);
+	//DestroyTree(T->Right);
+	
+}
+
+
+
+
+int Judge(int aCnt, int hCode, char text[], int hz[])
+{
+	//char s1[2];
+	//int i, j, weight, flag = 1;
+	//Tree T = BuildTree();
+	//Tree pt = NULL;
+	//int N = aCnt;
+	//for (i = 0; i< N; i++) {
+	//	scanf("%s %s\n", s1, answer);
+	//	if (strlen(answer) > N) { flag = 0; break; }
+	//	for (j = 0; s1[0] != text[j]; j++)
+	//		if (j == N) { flag = 0; break; }
+	//	weight = hz[j];
+	//	pt = T;
+	//	for (j = 0; j<strlen(answer); j++) {
+	//		if (answer[j] == '0') {                      //开始创建树
+	//			if (!pt->Left) pt->Left = BuildTree();   //没有就创建
+	//			else if (pt->Left->weight != 0) {
+	//				// printf("Exit from pt->Left->Weight == 1\n");
+	//				flag = 0;        //是否路过叶子
+	//			}
+	//			pt = pt->Left;
+	//		}
+	//		else if (answer[j] == '1') {
+	//			if (!pt->Right) pt->Right = BuildTree();
+	//			else if (pt->Right->weight != 0) {
+	//				// printf("Exit from pt->Right->Weight == 1\n");
+	//				flag = 0;
+	//			}
+	//			pt = pt->Right;
+	//		}
+	//		else {                                //应该不会发生
+	//											  // printf("Exit from not happen\n");
+	//			flag = 0;
+	//		}
+	//	}
+	//	pt->weight = weight;                        //叶子标记
+	//	weight = 0;                                 //清空weight
+	//	if (pt->Left || pt->Right) {
+	//		// printf("Exit from pt->Left || pt->Right\n");
+	//		flag = 0;     //不是叶子也错
+	//	}
+	//}
+	//if (flag != 0 && hCode == WPL(T, 0)) {
+	//	return 1;
+	//}
+	//else {
+	//	// printf("Exit from CodeLen != WPL(T, 0) %d\n", WPL(T, 0));
+	//	if (T) DestroyTree(T);
+	//	return 0;
+	//}
+
+	int i, len, wpl = 0, N = aCnt, j;
+	int skip = 1;
+	char s1[2];
+	Tree T = BuildTree();
+	for (i = 0; i < aCnt; i++)
+	{
+		if (!skip)
+		{
+			scanf("%s%s", s1, answer);
+			continue;
+		}
+		scanf("%s%s", s1, answer);
+		len = strlen(answer);
+		if (len > N)
+		{
+			skip = 0;
+			continue;
+		}
+		for (j = 0; s1[0] != text[j]; j++);
+		if (j >= N)
+		{
+			skip = 0;
+			continue;
+		}
+		wpl += hz[j] * len;
+		skip = JudgeTree(T, hz[j]);
+	}
+	DestroyTree(T);
+	if (skip == 0)
+	{
+		return 0;
+	}
 	if (wpl != hCode)
 	{
 		return 0;
 	}
 
 	return 1;
-
 }
 
 HuffmanTree Huffman(MinHeap H)
